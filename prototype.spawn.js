@@ -1,47 +1,15 @@
-module.exports = function() {
-    StructureSpawn.prototype.createCustomCreep =
-        function(energy, roleName) {
-            let numberOfParts = Math.floor(energy / 200);
-            let body = [];
-            for (let i = 0; i < numberOfParts; i++) {
-                body.push(WORK);
-            }
-            for (let i = 0; i < numberOfParts; i++) {
-                body.push(CARRY);
-            }
-            for (let i = 0; i < numberOfParts; i++) {
-                body.push(MOVE);
-            }
-            return this.createCreep(body, undefined, { role: roleName, working: false });
-        };
+var util = require('utility')
 
-    StructureSpawn.prototype.createLongDistanceHarvester =
-        function(energy, numberOfWorkParts, home, target, sourceIndex) {
-            let body = [];
-            for (let i = 0; i < numberOfWorkParts; i++) {
-                body.push(WORK);
-            }
-            energy -= 150 * numberOfWorkParts;
+StructureSpawn.prototype.createHarvester = function() {
+    var body = [WORK, CARRY, MOVE]
+    var name = util.getRandomName('Harvester')
+    var memory = {memory:{role:'harvester', deliver: false, target: null}}
+    return this.spawnCreep(body, name, memory)
+};
 
-            let numberOfParts = Math.floor(energy / 100);
-            for (let i = 0; i < numberOfParts; i++) {
-                body.push(CARRY);
-            }
-            for (let i = 0; i < numberOfParts + numberOfWorkParts; i++) {
-                body.push(MOVE);
-            }
-
-            return this.createCreep(body, undefined, {
-                role: 'longDistanceHarvester',
-                home: home,
-                target: target,
-                sourceIndex: sourceIndex,
-                working: false,
-            });
-        };
-
-    StructureSpawn.prototype.createClaimer =
-        function(target) {
-            return this.createCreep([CLAIM,MOVE], undefined, { role: 'claimer', target: target });
-        }
+StructureSpawn.prototype.createUpgrader = function() {
+    var body = [WORK, CARRY, MOVE]
+    var name = util.getRandomName('Upgrader')
+    var memory = {memory:{role:'upgrader', deliver: false}}
+    return this.spawnCreep(body, name, memory)
 };
