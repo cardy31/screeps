@@ -1,18 +1,35 @@
 var util = require('utility')
 
-Creep.prototype.Upgrade = function() {
-    this.memory.deliver = true
+MAIN_SPAWN = util.MAIN_SPAWN
 
-    if (this.transfer(util.MAIN_ROOM.controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-        this.moveTo(util.MAIN_ROOM.controller);
+Creep.prototype.Construct = function() {
+    // Find nearest site
+    var site = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+
+    // If there is one, build it
+    if (site !== undefined) {
+        if (this.build(site) === ERR_NOT_IN_RANGE) {
+            this.moveTo(site)
+        }
+    }
+    // No construction sites. Fall back to upgrading
+    else {
+        this.Upgrade()
     }
 };
+
+Creep.selector = 0
 
 Creep.prototype.Harvest = function() {
     var sources = this.room.find(FIND_SOURCES);
 
     if (this.memory.target == null) {
-        this.memory.target = util.getRandomInt(0, sources.length - 1)
+        Creep.selector += 1
+        if (Creep.selector > sources.length - 1) {
+            Creep.selector = 0
+        }
+        this.memory.target = Creep.selector
+        console.log("Source " + this.memory.target + " selected")
     }
 
     if(this.harvest(sources[this.memory.target]) == ERR_NOT_IN_RANGE) {
@@ -20,7 +37,15 @@ Creep.prototype.Harvest = function() {
     }
 };
 
+Creep.prototype.Reset = function() {
+    this.memory.deliver = false
+    this.memory.target = null
+};
+
 Creep.prototype.StoreEnergy = function() {
+    if (MAIN_SPAWN.energyCapacity === MAIN_SPAWN.energy) {
+        this.Construct()
+    }
     this.memory.deliver = true
 
     // TODO: Make this work for multiple containers
@@ -31,7 +56,10 @@ Creep.prototype.StoreEnergy = function() {
     }
 };
 
-Creep.prototype.Reset = function() {
-    this.memory.deliver = false
-    this.memory.target = null
+Creep.prototype.Upgrade = function() {
+    this.memory.deliver = true
+
+    if (this.transfer(util.MAIN_ROOM.controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        this.moveTo(util.MAIN_ROOM.controller);
+    }
 };
