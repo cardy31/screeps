@@ -53,16 +53,21 @@ Creep.prototype.Reset = function() {
 };
 
 Creep.prototype.StoreEnergy = function() {
-    if (MAIN_SPAWN.energyCapacity === MAIN_SPAWN.energy) {
-        this.Construct()
-    }
     this.memory.deliver = true
 
-    // TODO: Make this work for multiple containers
-    // Deliver to spawn iff the spawn isn't at max capacity
-    if (MAIN_SPAWN.energyCapacity > MAIN_SPAWN.energy &&
-        this.transfer(MAIN_SPAWN, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-        this.moveTo(MAIN_SPAWN);
+    // Get possible energy transfer targets
+    var targets = this.room.find(FIND_STRUCTURES, { filter: (structure) => {
+            return (structure.structureType == STRUCTURE_SPAWN ||
+                    structure.structureType == STRUCTURE_EXTENSION) &&
+                    structure.energy < structure.energyCapacity;
+        }
+    });
+
+    if (targets.length > 0) {
+        // Spawn or Extension
+        if (this.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+            this.moveTo(targets[0])
+        }
     }
 };
 
