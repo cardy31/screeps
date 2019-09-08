@@ -69,6 +69,9 @@ Creep.prototype.StoreEnergy = function() {
             this.moveTo(targets[0])
         }
     }
+    else {
+        this.Construct()
+    }
 };
 
 Creep.prototype.Upgrade = function() {
