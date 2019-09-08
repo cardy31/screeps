@@ -9,12 +9,9 @@ var roleUpgrader = {
             creep.Reset()
         }
 
-        // Harvest
         if (creep.carry.energy < creep.carryCapacity && !creep.memory.deliver) {
             creep.Harvest()
         }
-
-        // Deliver
         else {
             creep.Upgrade()
         }
