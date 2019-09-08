@@ -1,63 +1,54 @@
-module.exports = {
+var goingForController = false
+var deliver = false
+var ROOM_NAME = 'E8S23'
+var SPAWN_NAME = 'Spawn1'
+var DEBUG = false
+
+var util = require('utility');
+var MAIN_ROOM = util.MAIN_ROOM
+var MAIN_SPAWN = util.MAIN_SPAWN
+
+var roleHarvester = {
+
+    /** @param {Creep} creep **/
     run: function(creep) {
-        // Send to a different room
-        if (creep.memory.target !== undefined && creep.room.name !== creep.memory.target) {
-            // Find exit to target room
-            let exit = creep.room.findExitTo(creep.memory.target);
-            // Move to exit
-            creep.moveTo(creep.pos.findClosestByRange(exit));
-
-            return;
+        console.log(util.ROOM_NAME)
+        // Reset flags when creep is done delivering
+        if (creep.carry.energy == 0) {
+            if (DEBUG) { console.log("Reset flags") }
+            deliver = false
+            goingForController = false
         }
 
-        if (creep.memory.working === true && creep.carry.energy === 0) {
-            creep.memory.working = false;
-        }
-        else if (creep.memory.working === false && creep.carry.energy === creep.carryCapacity) {
-            creep.memory.working = true;
-        }
-
-        // If creep is meant to return energy to a structure
-        if (creep.memory.working === true) {
-            let structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                filter: (s) => (s.structureType === STRUCTURE_SPAWN
-                || s.structureType === STRUCTURE_EXTENSION
-                || s.structureType === STRUCTURE_TOWER)
-                && s.energy < s.energyCapacity
-            });
-
-            if (structure !== undefined) {
-                if (creep.transfer(structure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(structure);
-                }
-            }
-            // Store energy in containers
-            else {
-                console.log("Moving to container 1");
-                let containers = creep.room.find(FIND_STRUCTURES, {
-                    filter: (i) => i.structureType === STRUCTURE_CONTAINER
-                });
-
-                if (containers !== undefined) {
-                    if (creep.transfer(containers, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                        console.log("Moving to container 3");
-                        creep.moveTo(con);
-                    }
-                }
+        // Harvest
+        if(creep.carry.energy < creep.carryCapacity && !deliver) {
+            if (DEBUG) { console.log("Harvesting") }
+            var sources = creep.room.find(FIND_SOURCES);
+            if(creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(sources[0]);
             }
         }
-
-        // If creep is meant to harvest energy from a source
+        // Deliver
         else {
-            let source = creep.pos.findClosestByPath(FIND_SOURCES, {
-                filter: (s) => s.energy > 0
-            });
-            if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(source);
+            if (DEBUG) { console.log("Delivering") }
+            deliver = true
+
+            // Deliver to spawn iff the spawn isn't at max capacity
+            if (MAIN_SPAWN.energyCapacity > MAIN_SPAWN.energy &&
+                creep.transfer(MAIN_SPAWN, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE &&
+                !goingForController) {
+                if (DEBUG) { console.log("Delivering to Spawn") }
+                creep.moveTo(MAIN_SPAWN);
             }
-            else if (creep.harvest(source) === ERR_NOT_ENOUGH_RESOURCES)
-                creep.memory.working = true;
+            // Deliver to the room controller otherwise
+            // Once a creep has started delivering to the room controller, it will deliver all of its energy to it, instead of trying to bounce between the controller and the spawn.
+            else if (creep.transfer(MAIN_ROOM.controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                if (DEBUG) { console.log("Delivering to Controller") }
+                goingForController = true
+                creep.moveTo(MAIN_ROOM.controller);
+            }
         }
-        creep.say("H");
     }
 };
+
+module.exports = roleHarvester;
