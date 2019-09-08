@@ -38,10 +38,13 @@ var getRandomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+var selectorMagicNumber = 3
+
 // Exports
 module.exports = {
     getRandomInt: getRandomInt,
     getRandomName: getRandomName,
+    selectorMagicNumber: selectorMagicNumber,
     MAIN_ROOM: Game.rooms[ROOM_NAME],
     MAIN_SPAWN: Game.spawns[SPAWN_NAME],
     ROOM_NAME: ROOM_NAME,

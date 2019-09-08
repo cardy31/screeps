@@ -3,6 +3,8 @@ var util = require('utility')
 MAIN_SPAWN = util.MAIN_SPAWN
 
 Creep.prototype.Construct = function() {
+    this.memory.deliver = true
+
     // Find nearest site
     var site = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
 
@@ -23,13 +25,21 @@ Creep.selector = 0
 Creep.prototype.Harvest = function() {
     var sources = this.room.find(FIND_SOURCES);
 
+    // Select source to harvest from
     if (this.memory.target == null) {
+        // TODO: Make this better
+        // This is currently written for a room where source 1 has 4 spots and source 0 has 1 spot. So we have a 4:1 ratio of selecting source 1 over source 0
         Creep.selector += 1
-        if (Creep.selector > sources.length - 1) {
+        if (Creep.selector > util.selectorMagicNumber) {
             Creep.selector = 0
         }
-        this.memory.target = Creep.selector
-        console.log("Source " + this.memory.target + " selected")
+
+        if (Creep.selector > 0) {
+            this.memory.target = 1
+        }
+        else {
+            this.memory.target = 0
+        }
     }
 
     if(this.harvest(sources[this.memory.target]) == ERR_NOT_IN_RANGE) {
