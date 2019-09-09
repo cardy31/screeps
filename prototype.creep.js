@@ -62,7 +62,7 @@ Creep.prototype.Repair = function() {
 
     // Find nearest structure needing repair
     let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
-        { filter: () => s.hits < s.hitsMax &&
+        { filter: (s) => s.hits < s.hitsMax &&
                         s.structureType != STRUCTURE_WALL
     });
 
