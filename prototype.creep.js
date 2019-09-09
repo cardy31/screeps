@@ -1,6 +1,6 @@
 var util = require('utility')
 
-MAIN_SPAWN = util.MAIN_SPAWN
+var MAIN_SPAWN = util.MAIN_SPAWN
 
 Creep.prototype.Construct = function() {
     this.memory.deliver = true
@@ -16,6 +16,7 @@ Creep.prototype.Construct = function() {
     }
     // No construction sites. Fall back to upgrading
     else {
+        console.log(this.name + " fell back to upgrading")
         this.Upgrade()
     }
 };
@@ -70,6 +71,7 @@ Creep.prototype.StoreEnergy = function() {
         }
     }
     else {
+        console.log(this.name + " fell back to constructing")
         this.Construct()
     }
 };

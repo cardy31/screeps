@@ -6,10 +6,10 @@ var roleHarvester = require('role.harvester')
 var roleUpgrader = require('role.upgrader')
 
 // Config
-TARG_HARVESTERS = 1
-TARG_UPGRADERS = 1
-TARG_BUILDERS = 4
-TARG_BIG_HARVERSTERS = 2
+const TARG_HARVESTERS = 1
+const TARG_UPGRADERS = 1
+const TARG_BUILDERS = 3
+const TARG_BIG_HARVERSTERS = 2
 
 
 module.exports.loop = function () {
@@ -31,7 +31,7 @@ module.exports.loop = function () {
         util.MAIN_SPAWN.createBasicHarvester()
     }
     else if (numberOfUpgraders < TARG_UPGRADERS) {
-        if (util.MAIN_SPAWN.controller.level > 1) {
+        if (util.MAIN_SPAWN.room.controller.level > 1) {
             util.MAIN_SPAWN.createBigUpgrader()
         }
         else {
@@ -39,7 +39,7 @@ module.exports.loop = function () {
         }
     }
     else if (numberOfBuilders < TARG_BUILDERS) {
-        if (util.MAIN_SPAWN.controller.level > 1) {
+        if (util.MAIN_SPAWN.room.controller.level > 1) {
             util.MAIN_SPAWN.createBigBuilder()
         }
         else {
@@ -57,15 +57,17 @@ module.exports.loop = function () {
             case 'bigHarvester':
             case 'harvester':
                 roleHarvester.run(creep);
-                break
+                break;
             case 'bigUpgrader':
             case 'upgrader':
                 roleUpgrader.run(creep);
-                break
+                break;
             case 'bigBuilder':
             case 'builder':
                 roleBuilder.run(creep);
-                break
+                break;
+            default:
+                console.log(creep.name + " is stuck?")
         }
     }
 }

@@ -45,7 +45,7 @@ module.exports = {
     getRandomInt: getRandomInt,
     getRandomName: getRandomName,
     selectorMagicNumber: selectorMagicNumber,
-    MAIN_ROOM: Game.rooms[ROOM_NAME],
+    MAIN_ROOM: Game.spawns[SPAWN_NAME].room,
     MAIN_SPAWN: Game.spawns[SPAWN_NAME],
     ROOM_NAME: ROOM_NAME,
     SPAWN_NAME: SPAWN_NAME
