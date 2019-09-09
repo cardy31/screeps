@@ -38,6 +38,14 @@ var getRandomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+var getMyCreeps = function() {
+    return Game.spawns[SPAWN_NAME].room.find(FIND_CREEPS, {filter: (creep) => {return (creep.my)}});
+}
+
+var getEnemyCreeps = function() {
+    return Game.spawns[SPAWN_NAME].room.find(FIND_CREEPS, {filter: (creep) => {return (!creep.my)}});
+}
+
 var selectorMagicNumber = 3
 
 // Exports
@@ -45,6 +53,8 @@ module.exports = {
     getRandomInt: getRandomInt,
     getRandomName: getRandomName,
     selectorMagicNumber: selectorMagicNumber,
+    getMyCreeps: getMyCreeps,
+    getEnemyCreeps: getEnemyCreeps,
     MAIN_ROOM: Game.spawns[SPAWN_NAME].room,
     MAIN_SPAWN: Game.spawns[SPAWN_NAME],
     ROOM_NAME: ROOM_NAME,
