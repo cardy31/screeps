@@ -13,7 +13,7 @@ const TARG_HARVESTERS = 0
 const TARG_UPGRADERS = 3
 const TARG_BUILDERS = 3
 const TARG_BIG_HARVERSTERS = 3
-const TARG_REPAIRER = 1
+const TARG_REPAIRERS = 1
 
 
 module.exports.loop = function () {
@@ -58,12 +58,12 @@ module.exports.loop = function () {
         util.MAIN_SPAWN.createRepairer()
     }
 
-
     // Run various creep programs
     for (var name in Game.creeps) {
         var creep = Game.creeps[name]
 
-        if (creep.ticksToLive < 50) {
+        // Renew old creeps
+        if (creep.ticksToLive < 100) {
             roleRenew.run(creep);
         }
         else {
