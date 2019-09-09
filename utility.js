@@ -58,10 +58,12 @@ var getRoomLevel = function() {
     return Game.spawns[SPAWN_NAME].room.controller.level
 }
 
+var maxLevelPlannedFor = 2
+
 var getLevel = function() {
     var level = getRoomLevel()
     while (getExtensions().length < conf.TARG_EXTENSIONS[getRoomLevel()] &&
-    level > 1) {
+    level > 1 && level > maxLevelPlannedFor) {
         level -= 1
     }
     return level

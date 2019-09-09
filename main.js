@@ -26,16 +26,16 @@ module.exports.loop = function () {
     let creepsInRoom = util.MAIN_ROOM.find(FIND_MY_CREEPS);
     let creepCounts = {}
     for (let i = 0; i < creepsInRoom.length; i++) {
-        let role = creepsInRoom[i].memory.role
-        if (role in creepCounts) {
-            creepCounts[role] += 1
+        if (creepsInRoom[i].memory.role in creepCounts) {
+            creepCounts[creepsInRoom[i].memory.role] += 1
         }
         else {
-            creepCounts[role] = 1
+            creepCounts[creepsInRoom[i].memory.role] = 1
         }
     }
 
     // Spawn any new creeps needed
+    // TODO: Raise this "300" limit as we progress
     if (util.MAIN_SPAWN.room.energyAvailable >= 300) {
         if (creepCounts['harvester'] < conf.TARG_HARVESTERS) {
             util.MAIN_SPAWN.spawnMyCreep('harvester')
@@ -60,8 +60,7 @@ module.exports.loop = function () {
     for (var name in Game.creeps) {
         var creep = Game.creeps[name]
 
-        // Renew old creeps
-        // TODO: Let small creeps die if we want bigger ones
+        // Renew old creeps that are still at the correct level
         if (creep.ticksToLive < 100 &&
             body_conf.body(creep.memory.role, current_level) == creep.body) {
             roleRenew.run(creep)
