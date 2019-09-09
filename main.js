@@ -1,5 +1,6 @@
 require('require')
 var conf = require('config')
+var body_conf = require('body_layouts')
 
 var util = require('utility')
 var roleBuilder = require('role.builder')
@@ -24,32 +25,37 @@ module.exports.loop = function () {
     }
 
     let creepsInRoom = util.MAIN_ROOM.find(FIND_MY_CREEPS);
-
-    let numberOfHarvesters = _.sum(creepsInRoom, (c) => c.memory.role === 'harvester');
-    let numberOfUpgraders = _.sum(creepsInRoom, (c) => c.memory.role === 'upgrader');
-    let numberOfBuilders = _.sum(creepsInRoom, (c) => c.memory.role === 'builder');
-    let numberOfRepairers = _.sum(creepsInRoom, (c) => c.memory.role === 'repairer');
-    let numberOfWallRepairers = _.sum(creepsInRoom, (c) => c.memory.role === 'wallRepairer');
+    let creepCounts = {}
+    for (let i = 0; i < creepsInRoom.length; i++) {
+        let role = creepsInRoom[i].memory.role
+        if (role in creepCounts) {
+            creepCounts[role] += 1
+        }
+        else {
+            creepCounts[role] = 1
+        }
+    }
 
     // Spawn any new creeps needed
     if (util.MAIN_SPAWN.room.energyAvailable >= 300) {
-        if (numberOfHarvesters < conf.TARG_HARVESTERS) {
+        if (creepCounts['harvester'] < conf.TARG_HARVESTERS) {
             util.MAIN_SPAWN.spawnMyCreep('harvester')
         }
-        else if (numberOfUpgraders < conf.TARG_UPGRADERS) {
+        else if (creepCounts['upgrader'] < conf.TARG_UPGRADERS) {
             util.MAIN_SPAWN.spawnMyCreep('upgrader')
         }
-        else if (numberOfBuilders < conf.TARG_BUILDERS) {
+        else if (creepCounts['builder'] < conf.TARG_BUILDERS) {
             util.MAIN_SPAWN.spawnMyCreep('builder')
         }
-        else if (numberOfRepairers < conf.TARG_REPAIRERS) {
+        else if (creepCounts['repairer'] < conf.TARG_REPAIRERS) {
             util.MAIN_SPAWN.spawnMyCreep('repairer')
         }
-        else if (numberOfWallRepairers < conf.TARG_WALL_REPAIRERS) {
+        else if (creepCounts['wallRepairer'] < conf.TARG_WALL_REPAIRERS) {
             util.MAIN_SPAWN.spawnMyCreep('wallRepairer')
         }
     }
 
+    var current_level = util.level
 
     // Run various creep programs
     for (var name in Game.creeps) {
@@ -57,10 +63,12 @@ module.exports.loop = function () {
 
         // Renew old creeps
         // TODO: Let small creeps die if we want bigger ones
-        // if (creep.ticksToLive < 100) {
-        //     roleRenew.run(creep);
-        // }
-        // else {
+        if (creep.ticksToLive < 100 &&
+            body_conf.body(creep.memory.role, current_level) == creep.body) {
+            roleRenew.run(creep)
+        }
+        else {
+            // Run roles
             switch(creep.memory.role) {
                 case 'harvester':
                     roleHarvester.run(creep);
@@ -80,6 +88,6 @@ module.exports.loop = function () {
                 default:
                     console.log(creep.name + " is stuck?")
             }
-        // } // end 'else'
+        }
     }
 }

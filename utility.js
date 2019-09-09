@@ -15,6 +15,8 @@ var names2 = ["Sophia", "Emma", "Olivia", "Isabella", "Mia", "Ava", "Lily", "Zoe
 const ROOM_NAME = Game.spawns['Spawn1'].room
 const SPAWN_NAME = 'Spawn1'
 
+var conf = require('config')
+
 var getRandomName = function(prefix){
     var name, isNameTaken, tries = 0;
     do {
@@ -56,6 +58,14 @@ var getRoomLevel = function() {
     return Game.spawns[SPAWN_NAME].room.controller.level
 }
 
+var getLevel = function() {
+    var level = getRoomLevel()
+    while (getExtensions().length <= conf.TARG_EXTENSIONS[getRoomLevel()] && level > 1) {
+        level -= 1
+    }
+    return level
+}
+
 // Exports
 module.exports = {
     getRandomInt: getRandomInt,
@@ -65,6 +75,7 @@ module.exports = {
     enemyCreeps: getEnemyCreeps(),
     extensions: getExtensions(),
     roomLevel: getRoomLevel(),
+    level: getLevel(),
     MAIN_ROOM: Game.spawns[SPAWN_NAME].room,
     MAIN_SPAWN: Game.spawns[SPAWN_NAME],
     ROOM_NAME: ROOM_NAME,

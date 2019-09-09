@@ -9,7 +9,7 @@ Creep.prototype.Construct = function() {
     var extensions = this.room.find(FIND_CONSTRUCTION_SITES, {filter: (s) =>
     s.structureType == STRUCTURE_EXTENSION});
 
-    if (extensions !== undefined) {
+    if (extensions.length != 0) {
         if (this.build(extensions[0]) === ERR_NOT_IN_RANGE) {
             this.moveTo(extensions[0])
         }
@@ -25,6 +25,7 @@ Creep.prototype.Construct = function() {
         }
         // No construction sites. Fall back to upgrading
         else {
+            console.log(this.name + " fall back to upgrading")
             this.Upgrade()
         }
     }
@@ -49,12 +50,10 @@ Creep.prototype.Harvest = function() {
             if (util.selectorMagicNumber == 0) {
                 this.memory.target = util.selectorMagicNumber
                 util.selectorMagicNumber += 1
-                console.log("Magic number: " + util.selectorMagicNumber)
             }
             else {
                 this.memory.target = util.selectorMagicNumber
                 util.selectorMagicNumber = 0
-                console.log("Magic number: " + util.selectorMagicNumber)
             }
         }
     }
