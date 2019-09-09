@@ -12,7 +12,7 @@ var names1 = ["Jackson", "Aiden", "Liam", "Lucas", "Noah", "Mason", "Jayden", "E
 var names2 = ["Sophia", "Emma", "Olivia", "Isabella", "Mia", "Ava", "Lily", "Zoe", "Emily", "Chloe", "Layla", "Madison", "Madelyn", "Abigail", "Aubrey", "Charlotte", "Amelia", "Ella", "Kaylee", "Avery", "Aaliyah", "Hailey", "Hannah", "Addison", "Riley", "Harper", "Aria", "Arianna", "Mackenzie", "Lila", "Evelyn", "Adalyn", "Grace", "Brooklyn", "Ellie", "Anna", "Kaitlyn", "Isabelle", "Sophie", "Scarlett", "Natalie", "Leah", "Sarah", "Nora", "Mila", "Elizabeth", "Lillian", "Kylie", "Audrey", "Lucy", "Maya", "Annabelle", "Makayla", "Gabriella", "Elena", "Victoria", "Claire", "Savannah", "Peyton", "Maria", "Alaina", "Kennedy", "Stella", "Liliana", "Allison", "Samantha", "Keira", "Alyssa", "Reagan", "Molly", "Alexandra", "Violet", "Charlie", "Julia", "Sadie", "Ruby", "Eva", "Alice", "Eliana", "Taylor", "Callie", "Penelope", "Camilla", "Bailey", "Kaelyn", "Alexis", "Kayla", "Katherine", "Sydney", "Lauren", "Jasmine", "London", "Bella", "Adeline", "Caroline", "Vivian", "Juliana", "Gianna", "Skyler", "Jordyn"]
 
 // Helpful constants
-const ROOM_NAME = 'E8S23'
+const ROOM_NAME = Game.spawns['Spawn1'].room
 const SPAWN_NAME = 'Spawn1'
 
 var getRandomName = function(prefix){
@@ -46,7 +46,11 @@ var getEnemyCreeps = function() {
     return Game.spawns[SPAWN_NAME].room.find(FIND_CREEPS, {filter: (creep) => {return (!creep.my)}});
 }
 
-var selectorMagicNumber = 3
+var getExtensions = function() {
+    return Game.spawns[SPAWN_NAME].room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_EXTENSION});
+}
+
+var selectorMagicNumber = 0
 
 // Exports
 module.exports = {
@@ -55,6 +59,7 @@ module.exports = {
     selectorMagicNumber: selectorMagicNumber,
     getMyCreeps: getMyCreeps,
     getEnemyCreeps: getEnemyCreeps,
+    getExtensions: getExtensions,
     MAIN_ROOM: Game.spawns[SPAWN_NAME].room,
     MAIN_SPAWN: Game.spawns[SPAWN_NAME],
     ROOM_NAME: ROOM_NAME,

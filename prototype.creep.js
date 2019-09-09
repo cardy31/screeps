@@ -6,18 +6,27 @@ Creep.prototype.Construct = function() {
     this.memory.deliver = true
 
     // Find nearest site
-    var site = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+    var extensions = this.room.find(FIND_CONSTRUCTION_SITES, {filter: (s) =>
+    s.structureType == STRUCTURE_EXTENSION});
 
-    // If there is one, build it
-    if (site !== undefined) {
-        if (this.build(site) === ERR_NOT_IN_RANGE) {
-            this.moveTo(site)
+    if (extensions !== undefined) {
+        if (this.build(extensions[0]) === ERR_NOT_IN_RANGE) {
+            this.moveTo(extensions[0])
         }
     }
-    // No construction sites. Fall back to upgrading
     else {
-        console.log(this.name + " fell back to upgrading")
-        this.Upgrade()
+        var site = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+
+        // If there is one, build it
+        if (site !== undefined) {
+            if (this.build(site) === ERR_NOT_IN_RANGE) {
+                this.moveTo(site)
+            }
+        }
+        // No construction sites. Fall back to upgrading
+        else {
+            this.Upgrade()
+        }
     }
 };
 
@@ -37,17 +46,13 @@ Creep.prototype.Harvest = function() {
     else {
         // Select source to harvest from
         if (this.memory.target == null) {
-            // TODO: Make this better
-            // This is currently written for a room where source 1 has 4 spots and source 0 has 1 spot. So we have a 4:1 ratio of selecting source 1 over source 0
-            Creep.selector += 1
-            if (Creep.selector > util.selectorMagicNumber) {
-                Creep.selector = 0
-            }
-            if(Creep.selector > 0) {
-                this.memory.target = 1
+            if (util.selectorMagicNumber == 0) {
+                this.memory.target = util.selectorMagicNumber
+                util.selectorMagicNumber += 1
             }
             else {
-                this.memory.target = 0
+                this.memory.target = util.selectorMagicNumber
+                util.selectorMagicNumber = 0
             }
         }
     }
@@ -63,18 +68,18 @@ Creep.prototype.Repair = function() {
     // Find nearest structure needing repair
     let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
         { filter: (s) => s.hits < s.hitsMax &&
-                        s.structureType != STRUCTURE_WALL
+                        s.structureType != STRUCTURE_WALL &&
+                        s.structureType != STRUCTURE_RAMPART
     });
 
     // If there is one, repair it
     if (structure != undefined) {
-        if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(structure);
+        if (this.repair(structure) == ERR_NOT_IN_RANGE) {
+            this.moveTo(structure);
         }
     }
     // Otherwise build stuff
     else {
-        console.log(this.name + " fell back to constructing")
         this.Construct()
     }
 }
@@ -102,7 +107,6 @@ Creep.prototype.StoreEnergy = function() {
         }
     }
     else {
-        console.log(this.name + " fell back to constructing")
         this.Construct()
     }
 };
@@ -114,3 +118,25 @@ Creep.prototype.Upgrade = function() {
         this.moveTo(util.MAIN_ROOM.controller);
     }
 };
+
+Creep.prototype.WallRepair = function() {
+    this.memory.deliver = true
+
+    // Find nearest structure needing repair
+    let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
+        { filter: (s) => s.hits < 50000 &&
+                        s.structureType == STRUCTURE_WALL &&
+                        s.structureType == STRUCTURE_RAMPART
+    });
+
+    // If there is one, repair it
+    if (structure != undefined) {
+        if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(structure);
+        }
+    }
+    // Otherwise build stuff
+    else {
+        this.Construct()
+    }
+}

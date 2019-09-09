@@ -21,7 +21,7 @@ StructureSpawn.prototype.createHarvester = function() {
 StructureSpawn.prototype.createBigHarvester = function() {
     const body = [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE]
     const name = util.getRandomName('Big Harvester')
-    let memory = getMemory('bigHarvester')
+    let memory = getMemory('harvester')
     return this.spawnCreep(body, name, memory)
 }
 
@@ -54,11 +54,32 @@ StructureSpawn.prototype.createBigUpgrader = function() {
 };
 
 StructureSpawn.prototype.createRepairer = function() {
+    const body = [WORK, CARRY, MOVE]
+    const name = util.getRandomName('Repairer')
+    const memory = getMemory('repairer')
+    return this.spawnCreep(body, name, memory)
+};
+
+StructureSpawn.prototype.createBigRepairer = function() {
     const body = [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE]
     const name = util.getRandomName('Repairer')
     const memory = getMemory('repairer')
     return this.spawnCreep(body, name, memory)
-}
+};
+
+StructureSpawn.prototype.createWallRepairer = function() {
+    const body = [WORK, CARRY, MOVE]
+    const name = util.getRandomName('Wall Repairer')
+    const memory = getMemory('wallRepairer')
+    return this.spawnCreep(body, name, memory)
+};
+
+StructureSpawn.prototype.createBigWallRepairer = function() {
+    const body = [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE]
+    const name = util.getRandomName('Wall Repairer')
+    const memory = getMemory('wallRepairer')
+    return this.spawnCreep(body, name, memory)
+};
 
 function getMemory(role) {
     return {memory:{role: role, deliver: true, target: null}}
