@@ -11,7 +11,6 @@ var roleRenew = require('role.renew')
 var roleWallRepairer = require('role.wallRepairer')
 
 module.exports.loop = function () {
-    // console.log(conf.TARG_EXTENSIONS)
     // Base case. This kicks off rebuilding if we go to zero
     if (Object.keys(Game.creeps).length < 1) {
         util.MAIN_SPAWN.createHarvester()

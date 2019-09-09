@@ -60,7 +60,8 @@ var getRoomLevel = function() {
 
 var getLevel = function() {
     var level = getRoomLevel()
-    while (getExtensions().length <= conf.TARG_EXTENSIONS[getRoomLevel()] && level > 1) {
+    while (getExtensions().length < conf.TARG_EXTENSIONS[getRoomLevel()] &&
+    level > 1) {
         level -= 1
     }
     return level
