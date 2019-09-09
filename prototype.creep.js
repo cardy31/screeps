@@ -49,10 +49,12 @@ Creep.prototype.Harvest = function() {
             if (util.selectorMagicNumber == 0) {
                 this.memory.target = util.selectorMagicNumber
                 util.selectorMagicNumber += 1
+                console.log("Magic number: " + util.selectorMagicNumber)
             }
             else {
                 this.memory.target = util.selectorMagicNumber
                 util.selectorMagicNumber = 0
+                console.log("Magic number: " + util.selectorMagicNumber)
             }
         }
     }
@@ -125,18 +127,19 @@ Creep.prototype.WallRepair = function() {
     // Find nearest structure needing repair
     let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
         { filter: (s) => s.hits < 50000 &&
-                        s.structureType == STRUCTURE_WALL &&
-                        s.structureType == STRUCTURE_RAMPART
+                        (s.structureType == STRUCTURE_WALL ||
+                        s.structureType == STRUCTURE_RAMPART)
     });
 
     // If there is one, repair it
     if (structure != undefined) {
-        if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(structure);
+        if (this.repair(structure) == ERR_NOT_IN_RANGE) {
+            this.moveTo(structure);
         }
     }
     // Otherwise build stuff
     else {
+        console.log(this.name + " fell back on constructing")
         this.Construct()
     }
 }

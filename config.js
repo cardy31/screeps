@@ -1,3 +1,8 @@
 module.exports = {
-    TEST: "hello, world"
+    TARG_HARVESTERS: 3,
+    TARG_UPGRADERS: 5,
+    TARG_BUILDERS: 5,
+    TARG_REPAIRERS: 2,
+    TARG_WALL_REPAIRERS: 2,
+    TARG_EXTENSIONS: [0, 0, 5, 10]
 }

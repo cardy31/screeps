@@ -52,16 +52,21 @@ var getExtensions = function() {
 
 var selectorMagicNumber = 0
 
+var getRoomLevel = function() {
+    return Game.spawns[SPAWN_NAME].room.controller.level
+}
+
 // Exports
 module.exports = {
     getRandomInt: getRandomInt,
     getRandomName: getRandomName,
     selectorMagicNumber: selectorMagicNumber,
-    getMyCreeps: getMyCreeps,
-    getEnemyCreeps: getEnemyCreeps,
-    getExtensions: getExtensions,
+    myCreeps: getMyCreeps(),
+    enemyCreeps: getEnemyCreeps(),
+    extensions: getExtensions(),
+    roomLevel: getRoomLevel(),
     MAIN_ROOM: Game.spawns[SPAWN_NAME].room,
     MAIN_SPAWN: Game.spawns[SPAWN_NAME],
     ROOM_NAME: ROOM_NAME,
-    SPAWN_NAME: SPAWN_NAME
+    SPAWN_NAME: SPAWN_NAME,
 };

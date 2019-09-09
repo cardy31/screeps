@@ -1,5 +1,5 @@
 require('require')
-var config = require('config')
+var conf = require('config')
 
 var util = require('utility')
 var roleBuilder = require('role.builder')
@@ -9,14 +9,8 @@ var roleRepairer = require('role.repairer')
 var roleRenew = require('role.renew')
 var roleWallRepairer = require('role.wallRepairer')
 
-// Config
-const TARG_HARVESTERS = 3
-const TARG_UPGRADERS = 3
-const TARG_BUILDERS = 3
-const TARG_REPAIRERS = 1
-const TARG_WALL_REPAIRERS = 1
-
 module.exports.loop = function () {
+    // console.log(conf.TARG_EXTENSIONS)
     // Base case. This kicks off rebuilding if we go to zero
     if (Object.keys(Game.creeps).length < 1) {
         util.MAIN_SPAWN.createHarvester()
@@ -37,51 +31,22 @@ module.exports.loop = function () {
     let numberOfRepairers = _.sum(creepsInRoom, (c) => c.memory.role === 'repairer');
     let numberOfWallRepairers = _.sum(creepsInRoom, (c) => c.memory.role === 'wallRepairer');
 
-    let build_big = util.MAIN_SPAWN.room.controller.level > 1 && util.getExtensions().length > 3
-
     // Spawn any new creeps needed
     if (util.MAIN_SPAWN.room.energyAvailable >= 300) {
-        if (numberOfHarvesters < TARG_HARVESTERS) {
-            if (build_big) {
-                util.MAIN_SPAWN.createBigHarvester()
-            }
-            else {
-                console.log("Spawning harvester")
-                console.log(util.MAIN_SPAWN.createHarvester())
-            }
+        if (numberOfHarvesters < conf.TARG_HARVESTERS) {
+            util.MAIN_SPAWN.spawnMyCreep('harvester')
         }
-        else if (numberOfUpgraders < TARG_UPGRADERS) {
-            if (build_big) {
-                util.MAIN_SPAWN.createBigUpgrader()
-            }
-            else {
-                console.log("Spawning upgrader")
-                console.log(util.MAIN_SPAWN.createUpgrader())
-            }
+        else if (numberOfUpgraders < conf.TARG_UPGRADERS) {
+            util.MAIN_SPAWN.spawnMyCreep('upgrader')
         }
-        else if (numberOfBuilders < TARG_BUILDERS) {
-            if (build_big) {
-                util.MAIN_SPAWN.createBigBuilder()
-            }
-            else {
-                util.MAIN_SPAWN.createBuilder()
-            }
+        else if (numberOfBuilders < conf.TARG_BUILDERS) {
+            util.MAIN_SPAWN.spawnMyCreep('builder')
         }
-        else if (numberOfRepairers < TARG_REPAIRERS) {
-            if (build_big) {
-                util.MAIN_SPAWN.createBigRepairer()
-            }
-            else {
-                util.MAIN_SPAWN.createRepairer()
-            }
+        else if (numberOfRepairers < conf.TARG_REPAIRERS) {
+            util.MAIN_SPAWN.spawnMyCreep('repairer')
         }
-        else if (numberOfWallRepairers < TARG_WALL_REPAIRERS) {
-            if (build_big) {
-                util.MAIN_SPAWN.createBigWallRepairer()
-            }
-            else {
-                util.MAIN_SPAWN.createWallRepairer()
-            }
+        else if (numberOfWallRepairers < conf.TARG_WALL_REPAIRERS) {
+            util.MAIN_SPAWN.spawnMyCreep('wallRepairer')
         }
     }
 
