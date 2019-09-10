@@ -8,6 +8,8 @@ StructureSpawn.prototype.spawnMyCreep = function(role) {
     const body = body_conf.body(role, level)
     const name = util.getRandomName(roleToName(role) + ' ' + level)
     const memory = getMemory(role)
+    console.log(level)
+    console.log(body)
     ret = this.spawnCreep(body, name, memory)
     console.log(ret)
     return ret

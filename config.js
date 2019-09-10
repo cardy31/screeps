@@ -4,7 +4,8 @@ module.exports = {
     TARG_BUILDERS: 3,
     TARG_REPAIRERS: 2,
     TARG_WALL_REPAIRERS: 3,
-    TARG_EXTENSIONS: [0, 0, 5, 10],
-    TARG_ENERGY: [0, 250, 500, 500],
+    TARG_EXTENSIONS: [0, 0, 5, 10, 20, 30],
+    TARG_ENERGY: [0, 250, 500, 750, 1200, 1600],
+    MAX_LEVEL_PLANNED: 3,
     RENEW: false,
 }

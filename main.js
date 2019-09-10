@@ -13,7 +13,7 @@ var roleWallRepairer = require('role.wallRepairer')
 module.exports.loop = function () {
     // Base case. This kicks off rebuilding if we go to zero
     if (Object.keys(Game.creeps).length < 1) {
-        util.getMainSpawn().createHarvester()
+        util.getMainSpawn().spawnMyCreep('harvester')
     }
 
     // Delete old creeps from memory
