@@ -80,6 +80,10 @@ var getSpawnName = function() {
     return names.spawnName
 }
 
+var logJson = function(thing_to_print) {
+    console.log(JSON.stringify(thing_to_print))
+}
+
 // Exports
 module.exports = {
     getRandomInt: getRandomInt,
@@ -95,4 +99,5 @@ module.exports = {
     getMainSpawn: getMainSpawn,
     getRoomName: getRoomName,
     getSpawnName: getSpawnName,
+    logJson: logJson,
 };

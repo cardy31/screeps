@@ -37,11 +37,8 @@ module.exports.loop = function () {
 
     var current_level = util.getLevel()
 
-    console.log(JSON.stringify(creepCount))
-
     // Spawn any new creeps needed
     if (util.getMainRoom().energyAvailable >= conf.TARG_ENERGY[current_level]) {
-        console.log("Checking against reqs")
         if (creepCount['harvester'] < conf.TARG_HARVESTERS) {
             util.getMainSpawn().spawnMyCreep('harvester')
         }
