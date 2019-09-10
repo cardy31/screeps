@@ -35,10 +35,10 @@ module.exports.loop = function () {
         creepCount[creepsInRoom[i].memory.role] += 1
     }
 
-    var current_level = util.getLevel()
-
+    let current_level = util.getLevel()
+    let energyAvail = util.getMainRoom().energyAvailable
     // Spawn any new creeps needed
-    if (util.getMainRoom().energyAvailable >= conf.TARG_ENERGY[current_level]) {
+    if (energyAvail >= conf.TARG_ENERGY[current_level]) {
         if (creepCount['harvester'] < conf.TARG_HARVESTERS) {
             util.getMainSpawn().spawnMyCreep('harvester')
         }
@@ -61,9 +61,20 @@ module.exports.loop = function () {
         var creep = Game.creeps[name]
 
         // Renew old creeps that are still at the correct level
-        if (creep.ticksToLive < 100 &&
-            body_conf.body(creep.memory.role, current_level) == creep.body) {
-            roleRenew.run(creep)
+        if (conf.RENEW && ((creep.memory.renew ||
+            (creep.ticksToLive < 100 && util.bodyRenewValid(creep, current_level))) &&
+            energyAvail >= 150))
+        {
+
+            console.log(creep.name + " renewing")
+
+            if (creep.ticksToLive < 1400) {
+                creep.memory.renew = true
+                roleRenew.run(creep)
+            }
+            else {
+                creep.memory.renew = false
+            }
         }
         else {
             // Run roles

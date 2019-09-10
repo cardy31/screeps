@@ -84,6 +84,21 @@ var logJson = function(thing_to_print) {
     console.log(JSON.stringify(thing_to_print))
 }
 
+var logError = function(thing_to_print) {
+    console.log("ERROR: " + thing_to_print)
+}
+
+var bodyRenewValid = function(creep, current_level) {
+    let bodyInfoRaw = creep.body
+    var bodyInfoGood = []
+    for (let i = 0; i < bodyInfoRaw.length; i++) {
+        bodyInfoGood.push(bodyInfoRaw[i].type)
+    }
+    let creep_body = body_conf.body(creep.memory.role, current_level)
+    console.log("Renew: " + (creep_body.toString() == bodyInfoGood.toString()))
+    return (creep_body.toString() == bodyInfoGood.toString())
+}
+
 // Exports
 module.exports = {
     getRandomInt: getRandomInt,
@@ -100,4 +115,6 @@ module.exports = {
     getRoomName: getRoomName,
     getSpawnName: getSpawnName,
     logJson: logJson,
+    logError: logError,
+    bodyRenewValid: bodyRenewValid,
 };

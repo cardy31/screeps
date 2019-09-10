@@ -3,8 +3,8 @@ var util = require('utility')
 
 module.exports = {
     run: function(creep) {
-        if (util.MAIN_SPAWN.renewCreep(creep) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(util.MAIN_SPAWN);
+        if (util.getMainSpawn().renewCreep(creep) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(util.getMainSpawn());
         }
         creep.say("Renewing");
     }

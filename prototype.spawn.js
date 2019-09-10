@@ -14,7 +14,7 @@ StructureSpawn.prototype.spawnMyCreep = function(role) {
 }
 
 function getMemory(role) {
-    return {memory:{role: role, deliver: true, target: null}}
+    return {memory:{role: role, deliver: true, target: null, renew: false}}
 };
 
 function roleToName(role) {
