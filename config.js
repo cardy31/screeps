@@ -8,4 +8,5 @@ module.exports = {
     TARG_ENERGY: [0, 250, 500, 750, 1200, 1600],
     MAX_LEVEL_PLANNED: 3,
     RENEW: false,
+    SOURCE_SPACE: [4, 2]
 }
