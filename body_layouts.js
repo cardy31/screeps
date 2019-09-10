@@ -32,6 +32,39 @@ var bodyConfigs = {
                    [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]]
 }
 
+var newBodyConfigs = {
+    builder: {
+        0: {WORK: 1, CARRY: 1, MOVE: 1},
+        1: {WORK: 1, CARRY: 1, MOVE: 1},
+        2: {WORK: 3, CARRY: 3, MOVE: 2},
+        3: {WORK: 3, CARRY: 3, MOVE: 2},
+    },
+    harvester: {
+        0: {WORK: 1, CARRY: 1, MOVE: 1},
+        1: {WORK: 1, CARRY: 1, MOVE: 1},
+        2: {WORK: 3, CARRY: 3, MOVE: 2},
+        3: {WORK: 3, CARRY: 3, MOVE: 2},
+    },
+    repairer: {
+        0: {WORK: 1, CARRY: 1, MOVE: 1},
+        1: {WORK: 1, CARRY: 1, MOVE: 1},
+        2: {WORK: 2, CARRY: 4, MOVE: 3},
+        3: {WORK: 2, CARRY: 4, MOVE: 3},
+    },
+    upgrader: {
+        0: {WORK: 1, CARRY: 1, MOVE: 1},
+        1: {WORK: 1, CARRY: 1, MOVE: 1},
+        2: {WORK: 3, CARRY: 3, MOVE: 2},
+        3: {WORK: 3, CARRY: 3, MOVE: 2},
+    },
+    wallRepairer: {
+        0: {WORK: 1, CARRY: 1, MOVE: 1},
+        1: {WORK: 1, CARRY: 1, MOVE: 1},
+        2: {WORK: 2, CARRY: 4, MOVE: 3},
+        3: {WORK: 2, CARRY: 4, MOVE: 3},
+    },
+}
+
 var getBody = function(role, level) {
     return bodyConfigs[role][level]
 }
