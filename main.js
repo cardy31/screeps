@@ -13,7 +13,7 @@ var roleWallRepairer = require('role.wallRepairer')
 module.exports.loop = function () {
     // Base case. This kicks off rebuilding if we go to zero
     if (Object.keys(Game.creeps).length < 1) {
-        util.MAIN_SPAWN.createHarvester()
+        util.getMainSpawn().createHarvester()
     }
 
     // Delete old creeps from memory
@@ -23,33 +23,39 @@ module.exports.loop = function () {
         }
     }
 
-    let creepsInRoom = util.MAIN_ROOM.find(FIND_MY_CREEPS);
-    let creepCount = util.getEmptyCreepCount
+    let creepsInRoom = util.getMainRoom().find(FIND_MY_CREEPS);
+    var creepCount = util.getEmptyCreepCount()
     let roles = body_conf.roles
 
+    for (key in creepCount) {
+        creepCount[key] = 0
+    }
 
     for (let i = 0; i < creepsInRoom.length; i++) {
         creepCount[creepsInRoom[i].memory.role] += 1
     }
 
-    var current_level = util.level
+    var current_level = util.getLevel()
+
+    console.log(JSON.stringify(creepCount))
 
     // Spawn any new creeps needed
-    if (util.MAIN_SPAWN.room.energyAvailable >= conf.TARG_ENERGY[current_level]) {
+    if (util.getMainRoom().energyAvailable >= conf.TARG_ENERGY[current_level]) {
+        console.log("Checking against reqs")
         if (creepCount['harvester'] < conf.TARG_HARVESTERS) {
-            util.MAIN_SPAWN.spawnMyCreep('harvester')
+            util.getMainSpawn().spawnMyCreep('harvester')
         }
         else if (creepCount['upgrader'] < conf.TARG_UPGRADERS) {
-            util.MAIN_SPAWN.spawnMyCreep('upgrader')
+            util.getMainSpawn().spawnMyCreep('upgrader')
         }
         else if (creepCount['builder'] < conf.TARG_BUILDERS) {
-            util.MAIN_SPAWN.spawnMyCreep('builder')
+            util.getMainSpawn().spawnMyCreep('builder')
         }
         else if (creepCount['repairer'] < conf.TARG_REPAIRERS) {
-            util.MAIN_SPAWN.spawnMyCreep('repairer')
+            util.getMainSpawn().spawnMyCreep('repairer')
         }
         else if (creepCount['wallRepairer'] < conf.TARG_WALL_REPAIRERS) {
-            util.MAIN_SPAWN.spawnMyCreep('wallRepairer')
+            util.getMainSpawn().spawnMyCreep('wallRepairer')
         }
     }
 

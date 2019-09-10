@@ -1,6 +1,6 @@
 var util = require('utility')
 
-var MAIN_SPAWN = util.MAIN_SPAWN
+var MAIN_SPAWN = util.getMainSpawn()
 
 Creep.prototype.Construct = function() {
     this.memory.deliver = true
@@ -115,8 +115,8 @@ Creep.prototype.StoreEnergy = function() {
 Creep.prototype.Upgrade = function() {
     this.memory.deliver = true
 
-    if (this.transfer(util.MAIN_ROOM.controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-        this.moveTo(util.MAIN_ROOM.controller);
+    if (this.transfer(util.getMainRoom().controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        this.moveTo(util.getMainRoom().controller);
     }
 };
 

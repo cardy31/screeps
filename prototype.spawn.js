@@ -3,12 +3,14 @@ var body_conf = require('body_layouts')
 var conf = require('config')
 
 StructureSpawn.prototype.spawnMyCreep = function(role) {
-    console.log("Trying to spawn " + role)
-    const level = util.level
+    console.log("Trying to make new " + role)
+    const level = util.getLevel()
     const body = body_conf.body(role, level)
     const name = util.getRandomName(roleToName(role) + ' ' + level)
     const memory = getMemory(role)
-    return this.spawnCreep(body, name, memory)
+    ret = this.spawnCreep(body, name, memory)
+    console.log(ret)
+    return ret
 }
 
 function getMemory(role) {

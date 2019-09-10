@@ -1,10 +1,6 @@
 var names = require('names')
 var body_conf = require('body_layouts')
 
-// Helpful constants
-const ROOM_NAME = Game.spawns['Spawn1'].room
-const SPAWN_NAME = 'Spawn1'
-
 var conf = require('config')
 
 var getRandomName = function(prefix){
@@ -31,21 +27,21 @@ var getRandomInt = function(min, max) {
 };
 
 var getMyCreeps = function() {
-    return Game.spawns[SPAWN_NAME].room.find(FIND_CREEPS, {filter: (creep) => {return (creep.my)}});
+    return Game.spawns[getSpawnName()].room.find(FIND_CREEPS, {filter: (creep) => {return (creep.my)}});
 }
 
 var getEnemyCreeps = function() {
-    return Game.spawns[SPAWN_NAME].room.find(FIND_CREEPS, {filter: (creep) => {return (!creep.my)}});
+    return Game.spawns[getSpawnName()].room.find(FIND_CREEPS, {filter: (creep) => {return (!creep.my)}});
 }
 
 var getExtensions = function() {
-    return Game.spawns[SPAWN_NAME].room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_EXTENSION});
+    return Game.spawns[getSpawnName()].room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_EXTENSION});
 }
 
 var selectorMagicNumber = 0
 
 var getRoomLevel = function() {
-    return Game.spawns[SPAWN_NAME].room.controller.level
+    return Game.spawns[getSpawnName()].room.controller.level
 }
 
 var maxLevelPlannedFor = 2
@@ -68,19 +64,35 @@ var getEmptyCreepCount = function() {
     return creepCount
 }
 
+var getMainRoom = function() {
+    return Game.spawns[getSpawnName()].room
+}
+
+var getMainSpawn = function() {
+    return Game.spawns[getSpawnName()]
+}
+
+var getRoomName = function() {
+    return Game.spawns[getSpawnName()].room.name
+}
+
+var getSpawnName = function() {
+    return names.spawnName
+}
+
 // Exports
 module.exports = {
     getRandomInt: getRandomInt,
     getRandomName: getRandomName,
-    getEmptyCreepCount: getEmptyCreepCount(),
-    selectorMagicNumber: selectorMagicNumber,
-    myCreeps: getMyCreeps(),
-    enemyCreeps: getEnemyCreeps(),
-    extensions: getExtensions(),
-    roomLevel: getRoomLevel(),
-    level: getLevel(),
-    MAIN_ROOM: Game.spawns[SPAWN_NAME].room,
-    MAIN_SPAWN: Game.spawns[SPAWN_NAME],
-    ROOM_NAME: ROOM_NAME,
-    SPAWN_NAME: SPAWN_NAME,
+    getEmptyCreepCount: getEmptyCreepCount,
+    getSelectorMagicNumber: selectorMagicNumber,
+    getMyCreeps: getMyCreeps,
+    getEnemyCreeps: getEnemyCreeps,
+    getExtensions: getExtensions,
+    getRoomLevel: getRoomLevel,
+    getLevel: getLevel,
+    getMainRoom: getMainRoom,
+    getMainSpawn: getMainSpawn,
+    getRoomName: getRoomName,
+    getSpawnName: getSpawnName,
 };
