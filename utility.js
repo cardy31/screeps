@@ -1,15 +1,5 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('utility');
- * mod.thing == 'a thing'; // true
- */
-
-// Functions
-var names1 = ["Jackson", "Aiden", "Liam", "Lucas", "Noah", "Mason", "Jayden", "Ethan", "Jacob", "Jack", "Caden", "Logan", "Benjamin", "Michael", "Caleb", "Ryan", "Alexander", "Elijah", "James", "William", "Oliver", "Connor", "Matthew", "Daniel", "Luke", "Brayden", "Jayce", "Henry", "Carter", "Dylan", "Gabriel", "Joshua", "Nicholas", "Isaac", "Owen", "Nathan", "Grayson", "Eli", "Landon", "Andrew", "Max", "Samuel", "Gavin", "Wyatt", "Christian", "Hunter", "Cameron", "Evan", "Charlie", "David", "Sebastian", "Joseph", "Dominic", "Anthony", "Colton", "John", "Tyler", "Zachary", "Thomas", "Julian", "Levi", "Adam", "Isaiah", "Alex", "Aaron", "Parker", "Cooper", "Miles", "Chase", "Muhammad", "Christopher", "Blake", "Austin", "Jordan", "Leo", "Jonathan", "Adrian", "Colin", "Hudson", "Ian", "Xavier", "Camden", "Tristan", "Carson", "Jason", "Nolan", "Riley", "Lincoln", "Brody", "Bentley", "Nathaniel", "Josiah", "Declan", "Jake", "Asher", "Jeremiah", "Cole", "Mateo", "Micah", "Elliot"]
-var names2 = ["Sophia", "Emma", "Olivia", "Isabella", "Mia", "Ava", "Lily", "Zoe", "Emily", "Chloe", "Layla", "Madison", "Madelyn", "Abigail", "Aubrey", "Charlotte", "Amelia", "Ella", "Kaylee", "Avery", "Aaliyah", "Hailey", "Hannah", "Addison", "Riley", "Harper", "Aria", "Arianna", "Mackenzie", "Lila", "Evelyn", "Adalyn", "Grace", "Brooklyn", "Ellie", "Anna", "Kaitlyn", "Isabelle", "Sophie", "Scarlett", "Natalie", "Leah", "Sarah", "Nora", "Mila", "Elizabeth", "Lillian", "Kylie", "Audrey", "Lucy", "Maya", "Annabelle", "Makayla", "Gabriella", "Elena", "Victoria", "Claire", "Savannah", "Peyton", "Maria", "Alaina", "Kennedy", "Stella", "Liliana", "Allison", "Samantha", "Keira", "Alyssa", "Reagan", "Molly", "Alexandra", "Violet", "Charlie", "Julia", "Sadie", "Ruby", "Eva", "Alice", "Eliana", "Taylor", "Callie", "Penelope", "Camilla", "Bailey", "Kaelyn", "Alexis", "Kayla", "Katherine", "Sydney", "Lauren", "Jasmine", "London", "Bella", "Adeline", "Caroline", "Vivian", "Juliana", "Gianna", "Skyler", "Jordyn"]
+var names = require('names')
+var body_conf = require('body_layouts')
 
 // Helpful constants
 const ROOM_NAME = Game.spawns['Spawn1'].room
@@ -20,7 +10,7 @@ var conf = require('config')
 var getRandomName = function(prefix){
     var name, isNameTaken, tries = 0;
     do {
-        var nameArray = Math.random() > .5 ? names1 : names2;
+        var nameArray = Math.random() > .5 ? names.names1 : names.names2;
         name = nameArray[Math.floor(Math.random() * nameArray.length)];
 
         if (tries > 3){
@@ -69,10 +59,20 @@ var getLevel = function() {
     return level
 }
 
+var getEmptyCreepCount = function() {
+    creepCount = {}
+    let roles = body_conf.roles
+    for (let i = 0; i < roles.length; i++) {
+        creepCount[roles[i]] = 0
+    }
+    return creepCount
+}
+
 // Exports
 module.exports = {
     getRandomInt: getRandomInt,
     getRandomName: getRandomName,
+    getEmptyCreepCount: getEmptyCreepCount(),
     selectorMagicNumber: selectorMagicNumber,
     myCreeps: getMyCreeps(),
     enemyCreeps: getEnemyCreeps(),

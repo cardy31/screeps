@@ -31,6 +31,11 @@ var getBody = function(role, level) {
     return bodyConfigs[role][level]
 }
 
+var getRoles = function() {
+    return Object.keys(bodyConfigs)
+}
+
 module.exports = {
-    body: getBody
+    body: getBody,
+    roles: getRoles()
 };

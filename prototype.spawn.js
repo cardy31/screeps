@@ -3,6 +3,7 @@ var body_conf = require('body_layouts')
 var conf = require('config')
 
 StructureSpawn.prototype.spawnMyCreep = function(role) {
+    console.log("Trying to spawn " + role)
     const level = util.level
     const body = body_conf.body(role, level)
     const name = util.getRandomName(roleToName(role) + ' ' + level)

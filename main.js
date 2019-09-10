@@ -24,37 +24,34 @@ module.exports.loop = function () {
     }
 
     let creepsInRoom = util.MAIN_ROOM.find(FIND_MY_CREEPS);
-    let creepCounts = {}
-    for (let i = 0; i < creepsInRoom.length; i++) {
-        if (creepsInRoom[i].memory.role in creepCounts) {
-            creepCounts[creepsInRoom[i].memory.role] += 1
-        }
-        else {
-            creepCounts[creepsInRoom[i].memory.role] = 1
-        }
-    }
+    let creepCount = util.getEmptyCreepCount
+    let roles = body_conf.roles
 
-    // Spawn any new creeps needed
-    // TODO: Raise this "300" limit as we progress
-    if (util.MAIN_SPAWN.room.energyAvailable >= 300) {
-        if (creepCounts['harvester'] < conf.TARG_HARVESTERS) {
-            util.MAIN_SPAWN.spawnMyCreep('harvester')
-        }
-        else if (creepCounts['upgrader'] < conf.TARG_UPGRADERS) {
-            util.MAIN_SPAWN.spawnMyCreep('upgrader')
-        }
-        else if (creepCounts['builder'] < conf.TARG_BUILDERS) {
-            util.MAIN_SPAWN.spawnMyCreep('builder')
-        }
-        else if (creepCounts['repairer'] < conf.TARG_REPAIRERS) {
-            util.MAIN_SPAWN.spawnMyCreep('repairer')
-        }
-        else if (creepCounts['wallRepairer'] < conf.TARG_WALL_REPAIRERS) {
-            util.MAIN_SPAWN.spawnMyCreep('wallRepairer')
-        }
+
+    for (let i = 0; i < creepsInRoom.length; i++) {
+        creepCount[creepsInRoom[i].memory.role] += 1
     }
 
     var current_level = util.level
+
+    // Spawn any new creeps needed
+    if (util.MAIN_SPAWN.room.energyAvailable >= conf.TARG_ENERGY[current_level]) {
+        if (creepCount['harvester'] < conf.TARG_HARVESTERS) {
+            util.MAIN_SPAWN.spawnMyCreep('harvester')
+        }
+        else if (creepCount['upgrader'] < conf.TARG_UPGRADERS) {
+            util.MAIN_SPAWN.spawnMyCreep('upgrader')
+        }
+        else if (creepCount['builder'] < conf.TARG_BUILDERS) {
+            util.MAIN_SPAWN.spawnMyCreep('builder')
+        }
+        else if (creepCount['repairer'] < conf.TARG_REPAIRERS) {
+            util.MAIN_SPAWN.spawnMyCreep('repairer')
+        }
+        else if (creepCount['wallRepairer'] < conf.TARG_WALL_REPAIRERS) {
+            util.MAIN_SPAWN.spawnMyCreep('wallRepairer')
+        }
+    }
 
     // Run various creep programs
     for (var name in Game.creeps) {
