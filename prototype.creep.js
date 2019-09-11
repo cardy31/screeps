@@ -141,8 +141,8 @@ Creep.prototype.StoreEnergy = function() {
 Creep.prototype.Upgrade = function() {
     this.memory.deliver = true
 
-    if (this.transfer(util.getMainRoom().controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-        this.moveTo(util.getMainRoom().controller);
+    if (this.transfer(Game.rooms[this.memory.target_room].controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        this.moveTo(Game.rooms[this.memory.target_room].controller);
     }
 };
 
