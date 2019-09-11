@@ -39,19 +39,19 @@ module.exports.loop = function () {
     let energyAvail = util.getMainRoom().energyAvailable
     // Spawn any new creeps needed
     if (energyAvail >= conf.TARG_ENERGY[current_level]) {
-        if (creepCount['harvester'] < conf.TARG_HARVESTERS) {
+        if (creepCount['harvester'] < conf.TARG_HARVESTERS[current_level]) {
             util.getMainSpawn().spawnMyCreep('harvester')
         }
-        else if (creepCount['upgrader'] < conf.TARG_UPGRADERS) {
+        else if (creepCount['upgrader'] < conf.TARG_UPGRADERS[current_level]) {
             util.getMainSpawn().spawnMyCreep('upgrader')
         }
-        else if (creepCount['builder'] < conf.TARG_BUILDERS) {
+        else if (creepCount['builder'] < conf.TARG_BUILDERS[current_level]) {
             util.getMainSpawn().spawnMyCreep('builder')
         }
-        else if (creepCount['repairer'] < conf.TARG_REPAIRERS) {
+        else if (creepCount['repairer'] < conf.TARG_REPAIRERS[current_level]) {
             util.getMainSpawn().spawnMyCreep('repairer')
         }
-        else if (creepCount['wallRepairer'] < conf.TARG_WALL_REPAIRERS) {
+        else if (creepCount['wallRepairer'] < conf.TARG_WALL_REPAIRERS[current_level]) {
             util.getMainSpawn().spawnMyCreep('wallRepairer')
         }
     }

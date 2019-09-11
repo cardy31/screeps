@@ -5,7 +5,7 @@ var conf = require('config')
 StructureSpawn.prototype.spawnMyCreep = function(role) {
     console.log("Trying to make new " + role)
     const level = util.getLevel()
-    const body = body_conf.body(role, level)
+    const body = buildBody(role, level)
     const name = util.getRandomName(roleToName(role) + ' ' + level)
     const memory = getMemory(role)
     console.log("Level: " + level)
@@ -35,4 +35,16 @@ function roleToName(role) {
             console.log("Undefined role: " + role)
             return role
     }
+}
+
+function buildBody(role, level) {
+    let bodyConfig = body_conf.getBody(role, level)
+    let build = []
+
+    for (var key in bodyConfig) {
+        for (let i = 0; i < bodyConfig[key]; i++) {
+            build.push(key)
+        }
+    }
+    return build
 }

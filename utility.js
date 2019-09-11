@@ -57,7 +57,7 @@ var getLevel = function() {
 
 var getEmptyCreepCount = function() {
     creepCount = {}
-    let roles = body_conf.roles
+    let roles = body_conf.getRoles()
     for (let i = 0; i < roles.length; i++) {
         creepCount[roles[i]] = 0
     }

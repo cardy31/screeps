@@ -11,57 +11,60 @@ TOUGH:         10
 **/
 
 var bodyConfigs = {
-    builder:      [[WORK, CARRY, MOVE], [WORK, CARRY, MOVE],
-                   [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],
-                   [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE]],
-
-    harvester:    [[WORK, CARRY, MOVE], [WORK, CARRY, MOVE],
-                   [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],
-                   [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE]],
-
-    repairer:     [[WORK, CARRY, MOVE], [WORK, CARRY, MOVE],
-                   [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
-                   [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]],
-
-    upgrader:     [[WORK, CARRY, MOVE], [WORK, CARRY, MOVE],
-                   [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],
-                   [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE]],
-
-    wallRepairer: [[WORK, CARRY, MOVE], [WORK, CARRY, MOVE],
-                   [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
-                   [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]]
-}
-
-var newBodyConfigs = {
     builder: {
-        0: {WORK: 1, CARRY: 1, MOVE: 1},
-        1: {WORK: 1, CARRY: 1, MOVE: 1},
-        2: {WORK: 3, CARRY: 3, MOVE: 2},
-        3: {WORK: 3, CARRY: 3, MOVE: 2},
+        0: {work: 1, carry: 1, move: 1},
+        1: {work: 1, carry: 1, move: 1},
+        2: {work: 3, carry: 3, move: 2},
+        3: {work: 3, carry: 3, move: 2},
+        4: {},
+        5: {},
+        6: {},
+        7: {},
+        8: {},
     },
     harvester: {
-        0: {WORK: 1, CARRY: 1, MOVE: 1},
-        1: {WORK: 1, CARRY: 1, MOVE: 1},
-        2: {WORK: 3, CARRY: 3, MOVE: 2},
-        3: {WORK: 3, CARRY: 3, MOVE: 2},
+        0: {work: 1, carry: 1, move: 1},
+        1: {work: 1, carry: 1, move: 1},
+        2: {work: 3, carry: 3, move: 2},
+        3: {work: 3, carry: 3, move: 2},
+        4: {},
+        5: {},
+        6: {},
+        7: {},
+        8: {},
     },
     repairer: {
-        0: {WORK: 1, CARRY: 1, MOVE: 1},
-        1: {WORK: 1, CARRY: 1, MOVE: 1},
-        2: {WORK: 2, CARRY: 4, MOVE: 3},
-        3: {WORK: 2, CARRY: 4, MOVE: 3},
+        0: {work: 1, carry: 1, move: 1},
+        1: {work: 1, carry: 1, move: 1},
+        2: {work: 2, carry: 4, move: 3},
+        3: {work: 2, carry: 4, move: 3},
+        4: {},
+        5: {},
+        6: {},
+        7: {},
+        8: {},
     },
     upgrader: {
-        0: {WORK: 1, CARRY: 1, MOVE: 1},
-        1: {WORK: 1, CARRY: 1, MOVE: 1},
-        2: {WORK: 3, CARRY: 3, MOVE: 2},
-        3: {WORK: 3, CARRY: 3, MOVE: 2},
+        0: {work: 1, carry: 1, move: 1},
+        1: {work: 1, carry: 1, move: 1},
+        2: {work: 3, carry: 3, move: 2},
+        3: {work: 3, carry: 3, move: 2},
+        4: {},
+        5: {},
+        6: {},
+        7: {},
+        8: {},
     },
     wallRepairer: {
-        0: {WORK: 1, CARRY: 1, MOVE: 1},
-        1: {WORK: 1, CARRY: 1, MOVE: 1},
-        2: {WORK: 2, CARRY: 4, MOVE: 3},
-        3: {WORK: 2, CARRY: 4, MOVE: 3},
+        0: {work: 1, carry: 1, move: 1},
+        1: {work: 1, carry: 1, move: 1},
+        2: {work: 2, carry: 4, move: 3},
+        3: {work: 2, carry: 4, move: 3},
+        4: {},
+        5: {},
+        6: {},
+        7: {},
+        8: {},
     },
 }
 
@@ -74,6 +77,6 @@ var getRoles = function() {
 }
 
 module.exports = {
-    body: getBody,
-    roles: getRoles()
+    getBody: getBody,
+    getRoles: getRoles,
 };

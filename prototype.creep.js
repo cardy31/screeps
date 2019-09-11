@@ -1,4 +1,5 @@
 var util = require('utility')
+var conf = require('config')
 
 var MAIN_SPAWN = util.getMainSpawn()
 
@@ -132,7 +133,7 @@ Creep.prototype.WallRepair = function() {
 
     // Find nearest structure needing repair
     let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
-        { filter: (s) => s.hits < 100000 &&
+        { filter: (s) => s.hits < conf.WALL_STRENGTH &&
                         (s.structureType == STRUCTURE_WALL ||
                         s.structureType == STRUCTURE_RAMPART)
     });
