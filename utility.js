@@ -36,8 +36,8 @@ var getEnemyCreeps = function() {
     return Game.spawns[getSpawnName()].room.find(FIND_CREEPS, {filter: (creep) => {return (!creep.my)}});
 }
 
-var getExtensions = function() {
-    return Game.spawns[getSpawnName()].room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_EXTENSION});
+var getExtensions = function(room_name) {
+    return Game.rooms[room_name].find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_EXTENSION});
 }
 
 var selectorMagicNumber = 0
@@ -50,7 +50,7 @@ var maxLevelPlannedFor = conf.MAX_LEVEL_PLANNED
 
 var getLevel = function(room_name) {
     var level = getRoomLevel(room_name)
-    while ((getExtensions().length < conf.TARG_EXTENSIONS[level] &&
+    while ((getExtensions(room_name).length < conf.TARG_EXTENSIONS[level] &&
     level > 1) || level > maxLevelPlannedFor) {
         level -= 1
     }

@@ -13,7 +13,6 @@ StructureSpawn.prototype.spawnMyCreep = function(role, level, room_name) {
     console.log("Memory:", JSON.stringify(memory))
     ret = this.spawnCreep(body, name, memory)
     console.log("Response:", util.responseToString(ret))
-    console.log()
     return ret
 }
 

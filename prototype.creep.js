@@ -119,7 +119,7 @@ Creep.prototype.StoreEnergy = function() {
     this.memory.deliver = true
 
     // Get possible energy transfer targets
-    var targets = this.room.find(FIND_STRUCTURES, { filter: (structure) => {
+    var structure = this.pos.findClosestByPath(FIND_STRUCTURES, { filter: (structure) => {
             return (structure.structureType == STRUCTURE_SPAWN ||
                     structure.structureType == STRUCTURE_EXTENSION ||
                     structure.structureType == STRUCTURE_TOWER) &&
@@ -127,10 +127,10 @@ Creep.prototype.StoreEnergy = function() {
         }
     });
 
-    if (targets.length > 0) {
+    if (structure != undefined) {
         // Spawn or Extension
-        if (this.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            this.moveTo(targets[0])
+        if (this.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+            this.moveTo(structure)
         }
     }
     else {
@@ -141,7 +141,7 @@ Creep.prototype.StoreEnergy = function() {
 Creep.prototype.Upgrade = function() {
     this.memory.deliver = true
 
-    if (this.transfer(Game.rooms[this.memory.target_room].controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+    if (this.upgradeController(Game.rooms[this.memory.target_room].controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         this.moveTo(Game.rooms[this.memory.target_room].controller);
     }
 };

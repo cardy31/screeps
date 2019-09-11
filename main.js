@@ -61,10 +61,12 @@ module.exports.loop = function () {
                 creepCount[creepsInRoom[i].memory.role] += 1
             }
         }
-        console.log(room.name + ":", JSON.stringify(creepCount))
 
         let current_level = util.getLevel(room.name)
         let energyAvail = util.getMainRoom().energyAvailable
+
+        console.log(room.name + ":", JSON.stringify(creepCount), "level:", current_level)
+
         // Spawn any new creeps needed
         if (energyAvail >= conf.TARG_ENERGY[current_level]) {
             if (creepCount['harvester'] < conf.TARG_HARVESTERS[current_level]) {
