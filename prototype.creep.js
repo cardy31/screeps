@@ -42,6 +42,7 @@ Creep.prototype.Construct = function() {
         }
         // No construction sites. Fall back to upgrading
         else {
+            console.log(this.creep.room.name, "has no building sites!")
             if (this.room.energyAvailable < this.room.energyCapacityAvailable) {
                 // console.log(this.name + " falling back to storing energy")
                 this.StoreEnergy()
@@ -61,23 +62,33 @@ Creep.prototype.Harvest = function() {
 
     var nearbyEnergy = this.pos.findInRange(
         FIND_DROPPED_RESOURCES,
-        1
-    );
+        1,
+    {filter: (r) => r.resourceType == RESOURCE_ENERGY});
 
     if (nearbyEnergy.length > 0) {
         this.pickup(nearbyEnergy[0])
     }
-    else {
-        // Select source to harvest from
-        if (this.memory.target == null) {
-            if (util.selectorMagicNumber == 0) {
-                this.memory.target = util.selectorMagicNumber
-                util.selectorMagicNumber += 1
+    else if (this.memory.target == null){
+        if (sources.length == 2) {
+            if (sources[0].energy == 0) {
+                this.memory.target = 1
+            }
+            else if (sources[1].energy == 0) {
+                this.memory.target = 0
             }
             else {
-                this.memory.target = util.selectorMagicNumber
-                util.selectorMagicNumber = 0
+                if (util.selectorMagicNumber == 0) {
+                    this.memory.target = util.selectorMagicNumber
+                    util.selectorMagicNumber += 1
+                }
+                else {
+                    this.memory.target = util.selectorMagicNumber
+                    util.selectorMagicNumber = 0
+                }
             }
+        }
+        else {
+            this.memory.target = 0
         }
     }
 

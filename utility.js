@@ -136,6 +136,40 @@ var getMemory = function(role, room_name) {
     return {memory:{role: role, deliver: true, target: null, target_room: room_name}}
 }
 
+var census = function() {
+    const myCreeps = Game.creeps
+    var creepsByRoom = {}
+    // Count creeps in each controlled room
+    for (const[key, val] of Object.entries(myCreeps)) {
+        var creep = myCreeps[key]
+        if (creep.memory.target_room != undefined &&
+            creep.memory.target_room in creepsByRoom) {
+            creepsByRoom[creep.memory.target_room][creep.memory.role] += 1
+        }
+        else if (creep.memory.target_room != undefined) {
+            creepsByRoom[creep.memory.target_room] = getEmptyCreepCount()
+            creepsByRoom[creep.memory.target_room][creep.memory.role] = 1
+        }
+    }
+    return creepsByRoom
+}
+
+var clearOldMemory = function() {
+    for (var i in Memory.creeps) {
+        if(!Game.creeps[i]) {
+            delete Memory.creeps[i];
+        }
+    }
+}
+
+var getHostileCreeps = function(room_name) {
+    return Game.rooms[room_name].find(FIND_HOSTILE_CREEPS);
+}
+
+var getInjuredCreeps = function(room_name) {
+    return Game.rooms[room_name].find(FIND_MY_CREEPS, {filter: (c) => c.hits < c.hitsMax});
+}
+
 // Exports
 module.exports = {
     getRandomInt: getRandomInt,
@@ -152,10 +186,14 @@ module.exports = {
     getCorrectSpawn: getCorrectSpawn,
     getRoomName: getRoomName,
     getSpawnName: getSpawnName,
+    getHostileCreeps: getHostileCreeps,
+    getInjuredCreeps: getInjuredCreeps,
     logJson: logJson,
     logError: logError,
     bodyRenewValid: bodyRenewValid,
     responseToString: responseToString,
     myRooms: myRooms,
     getMemory: getMemory,
+    census: census,
+    clearOldMemory: clearOldMemory,
 };

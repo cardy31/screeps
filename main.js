@@ -1,6 +1,7 @@
 require('require')
 var conf = require('config')
 var body_conf = require('body_layouts')
+var towerControl = require('tower.control')
 
 var util = require('utility')
 var roleBuilder = require('role.builder')
@@ -12,58 +13,22 @@ var roleRenew = require('role.renew')
 var roleWallRepairer = require('role.wallRepairer')
 
 module.exports.loop = function () {
-    let myCreeps = Game.creeps
+    var creepsByRoom = util.census()
+    util.clearOldMemory()
 
-    var creepsByRoom = {}
+    for (key in Object.keys(util.myRooms)) {
+        var room = Game.rooms[util.myRooms[key]]
 
-    // Count creeps in each controlled room
-    for (const[key, val] of Object.entries(myCreeps)) {
-        var creep = myCreeps[key]
-        if (creep.memory.target_room != undefined &&
-            creep.memory.target_room in creepsByRoom) {
-            creepsByRoom[creep.memory.target_room][creep.memory.role] += 1
-        }
-        else if (creep.memory.target_room != undefined) {
-            creepsByRoom[creep.memory.target_room] = util.getEmptyCreepCount()
-            creepsByRoom[creep.memory.target_room][creep.memory.role] = 1
-        }
-    }
-
-    for (var k = 0; k < util.myRooms.length; k++) {
-        room = Game.rooms[util.myRooms[k]]
+        towerControl.runTowers(room.name)
 
         // Base case. This kicks off rebuilding if we go to zero
-        if (Object.keys(Game.creeps).length < 1) {
-            util.getMainSpawn().spawnMyCreep('harvester', 1, room.name)
+        if (room.find(FIND_MY_CREEPS).length < 1) {
+            util.getCorrectSpawn(room_name).spawnMyCreep('harvester', 1, room.name)
         }
 
-        // Delete old creeps from memory
-        for (var i in Memory.creeps) {
-            if(!Game.creeps[i]) {
-                delete Memory.creeps[i];
-            }
-        }
-
-        let creepsInRoom = room.find(FIND_MY_CREEPS);
-        var creepCount = util.getEmptyCreepCount()
-        let roles = body_conf.roles
-
-        for (key in creepCount) {
-            creepCount[key] = 0
-        }
-
-        if (creepsByRoom[room.name] != undefined) {
-            creepCount = creepsByRoom[room.name]
-        }
-        else {
-            for (let i = 0; i < creepsInRoom.length; i++) {
-
-                creepCount[creepsInRoom[i].memory.role] += 1
-            }
-        }
-
-        let current_level = util.getLevel(room.name)
-        let energyAvail = util.getMainRoom().energyAvailable
+        var current_level = util.getLevel(room.name)
+        var energyAvail = util.getMainRoom().energyAvailable
+        var creepCount = creepsByRoom[room.name]
 
         console.log(room.name + ":", JSON.stringify(creepCount), "level:", current_level)
 
@@ -87,21 +52,6 @@ module.exports.loop = function () {
             else if (creepCount['wallRepairer'] < conf.TARG_WALL_REPAIRERS[current_level]) {
                 util.getCorrectSpawn(room.name).spawnMyCreep('wallRepairer', current_level, room.name)
             }
-        }
-
-        var towers = Game.rooms[room.name].find(
-            FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
-
-        // Tower Attack
-        var hostiles = Game.rooms[room.name].find(FIND_HOSTILE_CREEPS);
-        if (hostiles.length > 0) {
-            towers.forEach(tower => tower.attack(hostiles[0]));
-        }
-
-        // Tower Heal
-        var myInjuredCreeps = Game.rooms[room.name].find(FIND_MY_CREEPS, {filter: (c) => c.hits < c.hitsMax});
-        if (myInjuredCreeps.length > 0) {
-            towers.forEach(tower => tower.heal(myInjuredCreeps[0]))
         }
 
         // Run various creep programs
