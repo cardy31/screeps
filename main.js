@@ -19,7 +19,6 @@ module.exports.loop = function () {
     // Count creeps in each controlled room
     for (const[key, val] of Object.entries(myCreeps)) {
         var creep = myCreeps[key]
-        // console.log("creep:",creep)
         if (creep.memory.target_room != undefined &&
             creep.memory.target_room in creepsByRoom) {
             creepsByRoom[creep.memory.target_room][creep.memory.role] += 1
@@ -62,9 +61,7 @@ module.exports.loop = function () {
                 creepCount[creepsInRoom[i].memory.role] += 1
             }
         }
-        console.log("Room:",room.name)
-        console.log("Creep Count:",JSON.stringify(creepCount))
-
+        console.log(room.name + ":", JSON.stringify(creepCount))
 
         let current_level = util.getLevel(room.name)
         let energyAvail = util.getMainRoom().energyAvailable
