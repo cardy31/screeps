@@ -89,6 +89,21 @@ module.exports.loop = function () {
             }
         }
 
+        var towers = Game.rooms[room.name].find(
+            FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+
+        // Tower Attack
+        var hostiles = Game.rooms[room.name].find(FIND_HOSTILE_CREEPS);
+        if (hostiles.length > 0) {
+            towers.forEach(tower => tower.attack(hostiles[0]));
+        }
+
+        // Tower Heal
+        var myInjuredCreeps = Game.rooms[room.name].find(FIND_MY_CREEPS, {filter: (c) => c.hits < c.hitsMax});
+        if (myInjuredCreeps.length > 0) {
+            towers.forEach(tower => tower.heal(myInjuredCreeps[0]))
+        }
+
         // Run various creep programs
         for (var name in Game.creeps) {
             var creep = Game.creeps[name]

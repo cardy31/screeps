@@ -1,8 +1,6 @@
 var util = require('utility')
 var conf = require('config')
 
-var MAIN_SPAWN = util.getMainSpawn()
-
 Creep.prototype.Claim = function() {
     var flag = Game.flags["RoomToClaim"]
     // this.moveTo(flag)
@@ -44,7 +42,7 @@ Creep.prototype.Construct = function() {
         }
         // No construction sites. Fall back to upgrading
         else {
-            if (util.getMainRoom().energyAvailable < util.getMainRoom().energyCapacityAvailable) {
+            if (this.room.energyAvailable < this.room.energyCapacityAvailable) {
                 // console.log(this.name + " falling back to storing energy")
                 this.StoreEnergy()
             }
