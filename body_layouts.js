@@ -35,6 +35,17 @@ var bodyConfigs = {
         7: {},
         8: {},
     },
+    claimer: {
+        0: {},
+        1: {},
+        2: {},
+        3: {claim: 1, move: 4},
+        4: {claim: 1, move: 10},
+        5: {claim: 1, move: 16},
+        6: {claim: 1, move: 16},
+        7: {claim: 1, move: 16},
+        8: {claim: 1, move: 16},
+    },
     harvester: {
         0: {work: 1, carry: 1, move: 1},
         1: {work: 1, carry: 1, move: 1},

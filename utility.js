@@ -3,6 +3,8 @@ var body_conf = require('body_layouts')
 
 var conf = require('config')
 
+var myRooms = ['E33N41', 'E36N41']
+
 var getRandomName = function(prefix){
     var name, isNameTaken, tries = 0;
     do {
@@ -40,14 +42,14 @@ var getExtensions = function() {
 
 var selectorMagicNumber = 0
 
-var getRoomLevel = function() {
-    return Game.spawns[getSpawnName()].room.controller.level
+var getRoomLevel = function(room_name) {
+    return Game.rooms[room_name].controller.level
 }
 
 var maxLevelPlannedFor = conf.MAX_LEVEL_PLANNED
 
-var getLevel = function() {
-    var level = getRoomLevel()
+var getLevel = function(room_name) {
+    var level = getRoomLevel(room_name)
     while ((getExtensions().length < conf.TARG_EXTENSIONS[level] &&
     level > 1) || level > maxLevelPlannedFor) {
         level -= 1
@@ -70,6 +72,16 @@ var getMainRoom = function() {
 
 var getMainSpawn = function() {
     return Game.spawns[getSpawnName()]
+}
+
+var getCorrectSpawn = function(room_name) {
+    var spawns = Game.rooms[room_name].find(FIND_MY_SPAWNS)
+    if (spawns.length == 0) {
+        return getMainSpawn()
+    }
+    else {
+        return spawns[0]
+    }
 }
 
 var getRoomName = function() {
@@ -97,6 +109,31 @@ var bodyRenewValid = function(creep, current_level) {
     let creep_body = body_conf.body(creep.memory.role, current_level)
     console.log("Renew: " + (creep_body.toString() == bodyInfoGood.toString()))
     return (creep_body.toString() == bodyInfoGood.toString())
+};
+
+var responseToString = function(responseCode) {
+    switch(responseCode) {
+        case 0:
+            return "OK";
+        case -1:
+            return "ERR_NOT_OWNER";
+        case -3:
+            return "ERR_NAME_EXISTS";
+        case -4:
+            return "ERR_BUSY";
+        case -6:
+            return "ERR_NOT_ENOUGH_ENERGY";
+        case -10:
+            return "ERR_INVALID_ARGS";
+        case -14:
+            return "ERR_RCL_NOT_ENOUGH";
+        default:
+            return responseCode;
+    }
+}
+
+var getMemory = function(role, room) {
+    return {memory:{role: role, deliver: true, target: null, target_room: room}}
 }
 
 // Exports
@@ -112,9 +149,13 @@ module.exports = {
     getLevel: getLevel,
     getMainRoom: getMainRoom,
     getMainSpawn: getMainSpawn,
+    getCorrectSpawn: getCorrectSpawn,
     getRoomName: getRoomName,
     getSpawnName: getSpawnName,
     logJson: logJson,
     logError: logError,
     bodyRenewValid: bodyRenewValid,
+    responseToString: responseToString,
+    myRooms: myRooms,
+    getMemory: getMemory,
 };

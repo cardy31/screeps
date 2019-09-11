@@ -3,6 +3,23 @@ var conf = require('config')
 
 var MAIN_SPAWN = util.getMainSpawn()
 
+Creep.prototype.Claim = function() {
+    var flag = Game.flags["RoomToClaim"]
+    // this.moveTo(flag)
+    if (flag.room == undefined) {
+        this.moveTo(flag)
+    }
+    else {
+        if (this.claimController(flag.room.controller) != 0) {
+            // console.log("Moving?")
+            this.moveTo(flag.room.controller)
+        }
+        else {
+            console.log("Bad")
+        }
+    }
+}
+
 Creep.prototype.Construct = function() {
     this.memory.deliver = true
 
@@ -104,7 +121,8 @@ Creep.prototype.StoreEnergy = function() {
     // Get possible energy transfer targets
     var targets = this.room.find(FIND_STRUCTURES, { filter: (structure) => {
             return (structure.structureType == STRUCTURE_SPAWN ||
-                    structure.structureType == STRUCTURE_EXTENSION) &&
+                    structure.structureType == STRUCTURE_EXTENSION ||
+                    structure.structureType == STRUCTURE_TOWER) &&
                     structure.energy < structure.energyCapacity;
         }
     });

@@ -1,33 +1,34 @@
-var util = require('utility')
+// var util = require('utility')
 var body_conf = require('body_layouts')
 var conf = require('config')
+var util = require('utility')
 
-StructureSpawn.prototype.spawnMyCreep = function(role, level) {
-    console.log("Trying to make new " + role)
+StructureSpawn.prototype.spawnMyCreep = function(role, level, room) {
+    console.log("Trying to make new", role)
     const body = buildBody(role, level)
+    var memory = util.getMemory(role, room)
     const name = util.getRandomName(roleToName(role) + ' ' + level)
-    const memory = getMemory(role)
-    console.log("Level: " + level)
-    console.log("Body: " + body)
+    console.log("Level:", level)
+    console.log("Body:", body)
+    console.log("Memory:", JSON.stringify(memory))
     ret = this.spawnCreep(body, name, memory)
-    console.log(ret)
+    console.log("Response:", util.responseToString(ret))
+    console.log()
     return ret
 }
 
-function getMemory(role) {
-    return {memory:{role: role, deliver: true, target: null, renew: false}}
-};
-
 function roleToName(role) {
     switch(role) {
-        case 'harvester':
-            return 'Harvester'
-        case 'upgrader':
-            return 'Upgrader'
         case 'builder':
             return 'Builder'
+        case 'claimer':
+            return 'Claimer'
+        case 'harvester':
+            return 'Harvester'
         case 'repairer':
             return 'Repairer'
+        case 'upgrader':
+            return 'Upgrader'
         case 'wallRepairer':
             return 'Wall Repairer'
         default:
