@@ -45,11 +45,11 @@ Creep.prototype.Construct = function() {
         // No construction sites. Fall back to upgrading
         else {
             if (util.getMainRoom().energyAvailable < util.getMainRoom().energyCapacityAvailable) {
-                console.log(this.name + " falling back to storing energy")
+                // console.log(this.name + " falling back to storing energy")
                 this.StoreEnergy()
             }
             else {
-                console.log(this.name + " falling back to wall repair")
+                // console.log(this.name + " falling back to wall repair")
                 this.WallRepair()
             }
         }
@@ -164,7 +164,7 @@ Creep.prototype.WallRepair = function() {
     }
     // Otherwise build stuff
     else {
-        console.log(this.name + " fell back on upgrading")
+        // console.log(this.name + " fell back on upgrading")
         this.Upgrade()
     }
 }

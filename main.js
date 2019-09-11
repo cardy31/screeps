@@ -16,36 +16,26 @@ module.exports.loop = function () {
 
     var creepsByRoom = {}
 
-    console.log("myCreeps:", myCreeps)
-
-    // Count creeps in each room I control
+    // Count creeps in each controlled room
     for (const[key, val] of Object.entries(myCreeps)) {
         var creep = myCreeps[key]
         // console.log("creep:",creep)
         if (creep.memory.target_room != undefined &&
             creep.memory.target_room in creepsByRoom) {
-
-            // console.log("Here3:", creepsByRoom)
             creepsByRoom[creep.memory.target_room][creep.memory.role] += 1
-            // console.log("Here4:", creepsByRoom)
         }
         else if (creep.memory.target_room != undefined) {
             creepsByRoom[creep.memory.target_room] = util.getEmptyCreepCount()
-            // console.log("Here1:", creepsByRoom)
             creepsByRoom[creep.memory.target_room][creep.memory.role] = 1
-            // console.log("Here2:", creepsByRoom)
         }
     }
-
-    util.logJson(creepsByRoom)
-
 
     for (var k = 0; k < util.myRooms.length; k++) {
         room = Game.rooms[util.myRooms[k]]
 
         // Base case. This kicks off rebuilding if we go to zero
         if (Object.keys(Game.creeps).length < 1) {
-            util.getMainSpawn().spawnMyCreep('harvester')
+            util.getMainSpawn().spawnMyCreep('harvester', 1, room.name)
         }
 
         // Delete old creeps from memory
@@ -149,4 +139,5 @@ module.exports.loop = function () {
             }
         }
     }
+    console.log()
 }

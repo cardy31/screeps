@@ -132,8 +132,8 @@ var responseToString = function(responseCode) {
     }
 }
 
-var getMemory = function(role, room) {
-    return {memory:{role: role, deliver: true, target: null, target_room: room}}
+var getMemory = function(role, room_name) {
+    return {memory:{role: role, deliver: true, target: null, target_room: room_name}}
 }
 
 // Exports
