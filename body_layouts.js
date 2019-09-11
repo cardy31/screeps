@@ -10,14 +10,27 @@ CLAIM:         600
 TOUGH:         10
 **/
 
+/*
+Available Energy Per Level
+0: 0
+1: 300
+2: 550
+3: 800
+4: 1300
+5: 1800
+6: 2300
+7: 5300
+8: 6300
+*/
+
 var bodyConfigs = {
     builder: {
         0: {work: 1, carry: 1, move: 1},
         1: {work: 1, carry: 1, move: 1},
         2: {work: 3, carry: 3, move: 2},
         3: {work: 3, carry: 3, move: 2},
-        4: {},
-        5: {},
+        4: {work: 5, carry: 8, move: 8},
+        5: {work: 8, carry: 10, move: 10},
         6: {},
         7: {},
         8: {},
@@ -27,8 +40,8 @@ var bodyConfigs = {
         1: {work: 1, carry: 1, move: 1},
         2: {work: 3, carry: 3, move: 2},
         3: {work: 3, carry: 3, move: 2},
-        4: {},
-        5: {},
+        4: {work: 5, carry: 8, move: 8},
+        5: {work: 8, carry: 10, move: 10},
         6: {},
         7: {},
         8: {},
@@ -38,8 +51,8 @@ var bodyConfigs = {
         1: {work: 1, carry: 1, move: 1},
         2: {work: 2, carry: 4, move: 3},
         3: {work: 2, carry: 4, move: 3},
-        4: {},
-        5: {},
+        4: {work: 3, carry: 10, move: 10},
+        5: {work: 5, carry: 13, move: 13},
         6: {},
         7: {},
         8: {},
@@ -49,8 +62,8 @@ var bodyConfigs = {
         1: {work: 1, carry: 1, move: 1},
         2: {work: 3, carry: 3, move: 2},
         3: {work: 3, carry: 3, move: 2},
-        4: {},
-        5: {},
+        4: {work: 5, carry: 8, move: 8},
+        5: {work: 8, carry: 10, move: 10},
         6: {},
         7: {},
         8: {},
@@ -60,8 +73,8 @@ var bodyConfigs = {
         1: {work: 1, carry: 1, move: 1},
         2: {work: 2, carry: 4, move: 3},
         3: {work: 2, carry: 4, move: 3},
-        4: {},
-        5: {},
+        4: {work: 3, carry: 10, move: 10},
+        5: {work: 5, carry: 13, move: 13},
         6: {},
         7: {},
         8: {},
