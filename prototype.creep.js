@@ -4,16 +4,17 @@ var conf = require('config')
 Creep.prototype.Claim = function() {
     var flag = Game.flags["RoomToClaim"]
     // this.moveTo(flag)
-    if (flag.room == undefined) {
+    var room = flag.room
+    if (room == undefined) {
         this.moveTo(flag)
     }
     else {
-        if (this.claimController(flag.room.controller) != 0) {
+        if (this.claimController(room.controller) == ERR_NOT_IN_RANGE) {
             // console.log("Moving?")
             this.moveTo(flag.room.controller)
         }
         else {
-            console.log("Bad")
+            util.logError("Claim is going poorly")
         }
     }
 }
@@ -150,7 +151,7 @@ Creep.prototype.StoreEnergy = function() {
 Creep.prototype.Upgrade = function() {
     this.memory.deliver = true
 
-    if (this.upgradeController(Game.rooms[this.memory.target_room].controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+    if (this.upgradeController(Game.rooms[this.memory.target_room].controller) == ERR_NOT_IN_RANGE) {
         this.moveTo(Game.rooms[this.memory.target_room].controller);
     }
 };

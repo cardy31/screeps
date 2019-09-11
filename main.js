@@ -73,8 +73,9 @@ module.exports.loop = function () {
                     creep.memory.renew = false
                 }
             }
+            // Make creeps more to a different room if needed
             else if(creep.memory.target_room != undefined && creep.memory.target_room != creep.room.name) {
-                creep.moveTo(Game.flags["RoomToClaim"], {reusePath: 30})
+                creep.moveTo(creep.memory.target_room)
             }
             else {
                 // Run roles
