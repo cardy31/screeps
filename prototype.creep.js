@@ -156,12 +156,9 @@ Creep.prototype.StoreEnergy = function() {
 };
 
 Creep.prototype.Travel = function() {
-    // Use the controller as a reference point since it has a pos attribute
-    // var ret = this.moveTo(Game.flags["RoomToClaim2"], {reusePath: 40})
-    // console.log("Travelling return:",ret)
     var ret = this.moveTo(Game.rooms[this.memory.target_room].controller)
+    // var ret = this.moveTo(Game.flags["RoomToClaim2"])
     if (ret == ERR_INVALID_TARGET) {
-        // this.moveTo(Game.flags["RoomToClaim2"])
         util.logError("Invalid target on creep", this.name)
     }
 }

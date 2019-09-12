@@ -9,7 +9,7 @@ module.exports = {
             creep.Travel()
         }
 
-        if (creep.carry.energy < creep.carryCapacity && !creep.memory.deliver) {
+        else if (creep.carry.energy < creep.carryCapacity && !creep.memory.deliver) {
             creep.Harvest()
         }
         else {
