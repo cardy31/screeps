@@ -51,8 +51,11 @@ var maxLevelPlannedFor = conf.MAX_LEVEL_PLANNED
 var getLevel = function(room_name) {
     var level = getRoomLevel(room_name)
     while ((getExtensions(room_name).length < conf.TARG_EXTENSIONS[level] &&
-    level > 1) || level > maxLevelPlannedFor) {
+    level > 1) || level > maxLevelPlannedFor || Game.rooms[room_name].find(FIND_MY_CREEPS).length < level) {
         level -= 1
+        if (level == 1) {
+            break;
+        }
     }
     return level
 }

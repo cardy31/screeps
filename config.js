@@ -1,6 +1,6 @@
 module.exports = {
     // Creep number targets
-    TARG_ATTACKERS:      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    TARG_ATTACKERS:      [0, 1, 1, 1, 1, 1, 1, 1, 1],
     TARG_BUILDERS:       [1, 3, 5, 4, 3, 2, 2, 1, 1],
     TARG_CLAIMERS:       [0, 0, 0, 0, 0, 0, 0, 0, 0],
     TARG_HARVESTERS:     [1, 2, 5, 4, 3, 2, 2, 1, 1],
