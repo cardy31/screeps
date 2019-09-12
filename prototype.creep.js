@@ -138,7 +138,9 @@ Creep.prototype.StoreEnergy = function() {
 
     // Get possible energy transfer targets
     var structure = this.pos.findClosestByPath(FIND_STRUCTURES, { filter: (structure) => {
-            return (structure.structureType == STRUCTURE_SPAWN &&
+            return ((structure.structureType == STRUCTURE_SPAWN ||
+                    structure.structureType == STRUCTURE_EXTENSION ||
+                    structure.structureType == STRUCTURE_TOWER) &&
                     structure.energy < structure.energyCapacity)
         }
     });
@@ -150,21 +152,7 @@ Creep.prototype.StoreEnergy = function() {
         }
     }
     else {
-        structure = this.pos.findClosestByPath(FIND_STRUCTURES, { filter: (structure) => {
-                return ((structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_TOWER) &&
-                        structure.energy < structure.energyCapacity)
-            }
-        });
-        if (structure != undefined) {
-            // Extension or Tower
-            if (this.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                this.moveTo(structure)
-            }
-        }
-        else {
-            this.Construct()
-        }
-
+        this.Construct()
     }
 };
 
