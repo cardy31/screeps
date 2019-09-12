@@ -37,7 +37,7 @@ module.exports.loop = function () {
         }
 
         var current_level = util.getLevel(room.name)
-        var energyAvail = util.getMainRoom().energyAvailable
+        var energyAvail = room.energyAvailable
         var creepCount = creepsCountByRoom[room.name]
 
         if (creepCount == undefined) {
@@ -47,48 +47,27 @@ module.exports.loop = function () {
         console.log(room.name + ":", JSON.stringify(creepCount), "level:", current_level)
 
         // Spawn any new creeps needed
-        if (energyAvail >= conf.TARG_ENERGY[current_level]) {
+        if (energyAvail >= conf.TARG_ENERGY[current_level] || room.name == 'E37N42') {
             if (creepCount['claimer'] < conf.TARG_CLAIMERS[current_level]) {
-                let spawn = util.getCorrectSpawn(room.name)
-                if (spawn.room.name != room.name && spawn.room.find(FIND_MY_CREEPS).length > 5) {
-                    spawn.spawnMyCreep('claimer', current_level, room.name)
-                }
+                util.getCorrectSpawn(room.name).spawnMyCreep('claimer', current_level, room.name)
             }
             else if (creepCount['harvester'] < conf.TARG_HARVESTERS[current_level]) {
-                let spawn = util.getCorrectSpawn(room.name)
-                if (spawn.room.name != room.name &&spawn.room.find(FIND_MY_CREEPS).length > 5) {
-                    spawn.spawnMyCreep('harvester', current_level, room.name)
-                }
+                util.getCorrectSpawn(room.name).spawnMyCreep('harvester', current_level, room.name)
             }
             else if (creepCount['upgrader'] < conf.TARG_UPGRADERS[current_level]) {
-                let spawn = util.getCorrectSpawn(room.name)
-                if (spawn.room.name != room.name &&spawn.room.find(FIND_MY_CREEPS).length > 5) {
-                    spawn.spawnMyCreep('upgrader', current_level, room.name)
-                }
+                util.getCorrectSpawn(room.name).spawnMyCreep('upgrader', current_level, room.name)
             }
             else if (creepCount['builder'] < conf.TARG_BUILDERS[current_level]) {
-                let spawn = util.getCorrectSpawn(room.name)
-                if (spawn.room.name != room.name &&spawn.room.find(FIND_MY_CREEPS).length > 5) {
-                    spawn.spawnMyCreep('builder', current_level, room.name)
-                }
+                util.getCorrectSpawn(room.name).spawnMyCreep('builder', current_level, room.name)
             }
             else if (creepCount['repairer'] < conf.TARG_REPAIRERS[current_level]) {
-                let spawn = util.getCorrectSpawn(room.name)
-                if (spawn.room.name != room.name &&spawn.room.find(FIND_MY_CREEPS).length > 5) {
-                    spawn.spawnMyCreep('repairer', current_level, room.name)
-                }
+                util.getCorrectSpawn(room.name).spawnMyCreep('repairer', current_level, room.name)
             }
             else if (creepCount['wallRepairer'] < conf.TARG_WALL_REPAIRERS[current_level]) {
-                let spawn = util.getCorrectSpawn(room.name)
-                if (spawn.room.name != room.name &&spawn.room.find(FIND_MY_CREEPS).length > 5) {
-                    spawn.spawnMyCreep('wallRepairer', current_level, room.name)
-                }
+                util.getCorrectSpawn(room.name).spawnMyCreep('wallRepairer', current_level, room.name)
             }
             else if (creepCount['attacker'] < conf.TARG_ATTACKERS[current_level]) {
-                let spawn = util.getCorrectSpawn(room.name)
-                if (spawn.room.name != room.name &&spawn.room.find(FIND_MY_CREEPS).length > 5) {
-                    util.getCorrectSpawn(room.name).spawnMyCreep('attacker', current_level, room.name)
-                }
+                util.getCorrectSpawn(room.name).spawnMyCreep('attacker', current_level, room.name)
             }
         }
 

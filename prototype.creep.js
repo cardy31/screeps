@@ -31,7 +31,8 @@ Creep.prototype.Construct = function() {
 
     // Prioritize building extensions
     var extensions = this.room.find(FIND_CONSTRUCTION_SITES, {filter: (s) =>
-    s.structureType == STRUCTURE_EXTENSION});
+    s.structureType == STRUCTURE_EXTENSION ||
+    s.structureType == STRUCTURE_WALL});
 
     if (extensions.length != 0) {
         if (this.build(extensions[0]) === ERR_NOT_IN_RANGE) {
@@ -137,21 +138,33 @@ Creep.prototype.StoreEnergy = function() {
 
     // Get possible energy transfer targets
     var structure = this.pos.findClosestByPath(FIND_STRUCTURES, { filter: (structure) => {
-            return (structure.structureType == STRUCTURE_SPAWN ||
-                    structure.structureType == STRUCTURE_EXTENSION ||
-                    structure.structureType == STRUCTURE_TOWER) &&
-                    structure.energy < structure.energyCapacity;
+            return (structure.structureType == STRUCTURE_SPAWN &&
+                    structure.energy < structure.energyCapacity)
         }
     });
 
     if (structure != undefined) {
-        // Spawn or Extension
+        // Spawn
         if (this.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             this.moveTo(structure)
         }
     }
     else {
-        this.Construct()
+        structure = this.pos.findClosestByPath(FIND_STRUCTURES, { filter: (structure) => {
+                return ((structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_TOWER) &&
+                        structure.energy < structure.energyCapacity)
+            }
+        });
+        if (structure != undefined) {
+            // Extension or Tower
+            if (this.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                this.moveTo(structure)
+            }
+        }
+        else {
+            this.Construct()
+        }
+
     }
 };
 
