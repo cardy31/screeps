@@ -8,7 +8,7 @@ module.exports = {
         }
 
         if (creep.memory.target_room != undefined && creep.memory.target_room != creep.room.name) {
-            creep.travel()
+            creep.Travel()
         }
 
         if (creep.carry.energy < creep.carryCapacity && !creep.memory.deliver) {

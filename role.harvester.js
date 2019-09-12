@@ -12,7 +12,7 @@ var roleHarvester = {
         }
 
         if (creep.memory.target_room != undefined && creep.memory.target_room != creep.room.name) {
-            creep.travel()
+            creep.Travel()
         }
 
 

@@ -137,10 +137,14 @@ var getMemory = function(role, room_name) {
 }
 
 var census = function() {
-    const myCreeps = Game.creeps
+    var myCreeps = Game.creeps
     var creepsByRoom = {}
+    var creepNamesByRoom = {}
+    var i = 0
     // Count creeps in each controlled room
     for (const[key, val] of Object.entries(myCreeps)) {
+        i += 1
+        // console.log("That i",i)
         var creep = myCreeps[key]
         if (creep.memory.target_room != undefined &&
             creep.memory.target_room in creepsByRoom) {
@@ -150,8 +154,17 @@ var census = function() {
             creepsByRoom[creep.memory.target_room] = getEmptyCreepCount()
             creepsByRoom[creep.memory.target_room][creep.memory.role] = 1
         }
+
+        if (creep.memory.target_room in creepNamesByRoom) {
+            creepNamesByRoom[creep.memory.target_room].push(creep.name)
+
+        }
+        else {
+            creepNamesByRoom[creep.memory.target_room] = []
+            creepNamesByRoom[creep.memory.target_room].push(creep.name)
+        }
     }
-    return creepsByRoom
+    return [creepsByRoom, creepNamesByRoom]
 }
 
 var clearOldMemory = function() {
@@ -170,6 +183,20 @@ var getInjuredCreeps = function(room_name) {
     return Game.rooms[room_name].find(FIND_MY_CREEPS, {filter: (c) => c.hits < c.hitsMax});
 }
 
+var getCreepsByRoom = function() {
+    var allCreeps = Game.creeps
+    var creepDict = {}
+
+    for (const [key, val] of Object.entries(allCreeps)) {
+        var creepRoom = allCreeps[key].memory.target_room
+        if (!(creepRoom in creepDict)) {
+            creepDict[creepRoom] = []
+        }
+        creepDict[creepRoom].push(allCreeps[key].name)
+    }
+    return creepDict
+}
+
 // Exports
 module.exports = {
     getRandomInt: getRandomInt,
@@ -180,6 +207,7 @@ module.exports = {
     getEnemyCreeps: getEnemyCreeps,
     getExtensions: getExtensions,
     getRoomLevel: getRoomLevel,
+    getCreepsByRoom: getCreepsByRoom,
     getLevel: getLevel,
     getMainRoom: getMainRoom,
     getMainSpawn: getMainSpawn,

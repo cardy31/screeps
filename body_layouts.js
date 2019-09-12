@@ -24,6 +24,17 @@ Available Energy Per Level
 */
 
 var bodyConfigs = {
+    attacker: {
+        0: {attack: 2, move: 2},
+        1: {attack: 2, move: 2},
+        2: {attack: 4, move: 4, tough: 3},
+        3: {attack: 6, move: 5, tough: 2},
+        4: {attack: 6, move: 5, tough: 2},
+        5: {attack: 6, move: 5, tough: 2},
+        6: {},
+        7: {},
+        8: {},
+    },
     builder: {
         0: {work: 1, carry: 1, move: 1},
         1: {work: 1, carry: 1, move: 2},
@@ -47,12 +58,23 @@ var bodyConfigs = {
         8: {claim: 1, move: 16},
     },
     harvester: {
-        0: {work: 1, carry: 1, move: 1},
+        0: {work: 1, carry: 1, move: 2},
         1: {work: 1, carry: 1, move: 2},
-        2: {work: 3, carry: 3, move: 2},
-        3: {work: 3, carry: 3, move: 2},
-        4: {work: 5, carry: 8, move: 8},
+        2: {work: 3, carry: 2, move: 3},
+        3: {work: 3, carry: 2, move: 3},
+        4: {work: 5, carry: 6, move: 10},
         5: {work: 8, carry: 10, move: 10},
+        6: {},
+        7: {},
+        8: {},
+    },
+    rangedAttacker: {
+        0: {ranged_attack: 1, move: 2},
+        1: {ranged_attack: 1, move: 2},
+        2: {ranged_attack: 2, move: 4, tough: 5},
+        3: {ranged_attack: 3, move: 6, tough: 5},
+        4: {ranged_attack: 6, move: 7, tough: 5},
+        5: {ranged_attack: 7, move: 8, tough: 5},
         6: {},
         7: {},
         8: {},

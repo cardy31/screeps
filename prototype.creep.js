@@ -1,12 +1,12 @@
 var util = require('utility')
 var conf = require('config')
 
-// Creep.prototype.Attack = function() {
-//     var hostiles = util.getHostileCreeps(this.room.name)
-//     if (hostiles.length > 0) {
-//         if ()
-//     }
-// }
+Creep.prototype.Attack = function() {
+    var hostiles = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS)
+    if (hostiles != undefined && this.attack(hostiles[0] == ERR_NOT_IN_RANGE)) {
+        this.moveTo(hostiles[0])
+    }
+}
 
 Creep.prototype.Claim = function() {
     var flag = Game.flags["RoomToClaim2"]
@@ -156,9 +156,13 @@ Creep.prototype.StoreEnergy = function() {
 };
 
 Creep.prototype.Travel = function() {
-    if (creep.moveTo(Game.rooms[creep.memory.room]) != 0) {
-        // TODO: Find a better way to send creeps to a new room
-        creep.moveTo(Game.flags["RoomToClaim2"])
+    // Use the controller as a reference point since it has a pos attribute
+    // var ret = this.moveTo(Game.flags["RoomToClaim2"], {reusePath: 40})
+    // console.log("Travelling return:",ret)
+    var ret = this.moveTo(Game.rooms[this.memory.target_room].controller)
+    if (ret == ERR_INVALID_TARGET) {
+        // this.moveTo(Game.flags["RoomToClaim2"])
+        util.logError("Invalid target on creep", this.name)
     }
 }
 
