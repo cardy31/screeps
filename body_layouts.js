@@ -26,7 +26,7 @@ Available Energy Per Level
 var bodyConfigs = {
     builder: {
         0: {work: 1, carry: 1, move: 1},
-        1: {work: 1, carry: 1, move: 1},
+        1: {work: 1, carry: 1, move: 2},
         2: {work: 3, carry: 3, move: 2},
         3: {work: 3, carry: 3, move: 2},
         4: {work: 5, carry: 8, move: 8},
@@ -48,7 +48,7 @@ var bodyConfigs = {
     },
     harvester: {
         0: {work: 1, carry: 1, move: 1},
-        1: {work: 1, carry: 1, move: 1},
+        1: {work: 1, carry: 1, move: 2},
         2: {work: 3, carry: 3, move: 2},
         3: {work: 3, carry: 3, move: 2},
         4: {work: 5, carry: 8, move: 8},
@@ -70,7 +70,7 @@ var bodyConfigs = {
     },
     upgrader: {
         0: {work: 1, carry: 1, move: 1},
-        1: {work: 1, carry: 1, move: 1},
+        1: {work: 1, carry: 1, move: 2},
         2: {work: 3, carry: 3, move: 2},
         3: {work: 3, carry: 3, move: 2},
         4: {work: 5, carry: 8, move: 8},

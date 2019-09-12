@@ -9,7 +9,7 @@ module.exports = {
 
     // Other Configs
     TARG_EXTENSIONS: [0, 0, 5, 10, 20, 30, 40, 50, 60],
-    TARG_ENERGY: [0, 250, 500, 750, 1200, 1600, 2150, 2500, 2500],
+    TARG_ENERGY: [0, 250, 500, 750, 1100, 1600, 2150, 2500, 2500],
     MAX_LEVEL_PLANNED: 5,
     RENEW: false,
     WALL_STRENGTH: 200000,

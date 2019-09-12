@@ -1,8 +1,15 @@
 var util = require('utility')
 var conf = require('config')
 
+// Creep.prototype.Attack = function() {
+//     var hostiles = util.getHostileCreeps(this.room.name)
+//     if (hostiles.length > 0) {
+//         if ()
+//     }
+// }
+
 Creep.prototype.Claim = function() {
-    var flag = Game.flags["RoomToClaim"]
+    var flag = Game.flags["RoomToClaim2"]
     // this.moveTo(flag)
     var room = flag.room
     if (room == undefined) {
@@ -10,12 +17,12 @@ Creep.prototype.Claim = function() {
     }
     else {
         if (this.claimController(room.controller) == ERR_NOT_IN_RANGE) {
-            // console.log("Moving?")
+            console.log(this.name + "Moving towards controller")
             this.moveTo(flag.room.controller)
         }
-        else {
-            util.logError("Claim is going poorly")
-        }
+        // else {
+        //     util.logError("Claim is going poorly")
+        // }
     }
 }
 
@@ -43,7 +50,7 @@ Creep.prototype.Construct = function() {
         }
         // No construction sites. Fall back to upgrading
         else {
-            console.log(this.creep.room.name, "has no building sites!")
+            // console.log(this.creep.room.name, "has no building sites!")
             if (this.room.energyAvailable < this.room.energyCapacityAvailable) {
                 // console.log(this.name + " falling back to storing energy")
                 this.StoreEnergy()
@@ -147,6 +154,13 @@ Creep.prototype.StoreEnergy = function() {
         this.Construct()
     }
 };
+
+Creep.prototype.Travel = function() {
+    if (creep.moveTo(Game.rooms[creep.memory.room]) != 0) {
+        // TODO: Find a better way to send creeps to a new room
+        creep.moveTo(Game.flags["RoomToClaim2"])
+    }
+}
 
 Creep.prototype.Upgrade = function() {
     this.memory.deliver = true

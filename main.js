@@ -19,6 +19,10 @@ module.exports.loop = function () {
     for (key in Object.keys(util.myRooms)) {
         var room = Game.rooms[util.myRooms[key]]
 
+        if (room == undefined) {
+            continue;
+        }
+
         towerControl.runTowers(room.name)
 
         // Base case. This kicks off rebuilding if we go to zero
@@ -30,15 +34,19 @@ module.exports.loop = function () {
         var energyAvail = util.getMainRoom().energyAvailable
         var creepCount = creepsByRoom[room.name]
 
+        if (creepCount == undefined) {
+            creepCount = util.getEmptyCreepCount()
+        }
+
         console.log(room.name + ":", JSON.stringify(creepCount), "level:", current_level)
 
         // Spawn any new creeps needed
         if (energyAvail >= conf.TARG_ENERGY[current_level]) {
-            if (creepCount['harvester'] < conf.TARG_HARVESTERS[current_level]) {
-                util.getCorrectSpawn(room.name).spawnMyCreep('harvester', current_level, room.name)
-            }
-            else if (creepCount['claimer'] < conf.TARG_CLAIMERS[current_level]) {
+            if (creepCount['claimer'] < conf.TARG_CLAIMERS[current_level]) {
                 util.getCorrectSpawn(room.name).spawnMyCreep('claimer', current_level, room.name)
+            }
+            else if (creepCount['harvester'] < conf.TARG_HARVESTERS[current_level]) {
+                util.getCorrectSpawn(room.name).spawnMyCreep('harvester', current_level, room.name)
             }
             else if (creepCount['upgrader'] < conf.TARG_UPGRADERS[current_level]) {
                 util.getCorrectSpawn(room.name).spawnMyCreep('upgrader', current_level, room.name)
@@ -74,8 +82,17 @@ module.exports.loop = function () {
                 }
             }
             // Make creeps more to a different room if needed
-            else if(creep.memory.target_room != undefined && creep.memory.target_room != creep.room.name) {
-                creep.moveTo(creep.memory.target_room)
+            else if(creep.memory.role != 'claimer' &&
+            creep.memory.target_room != undefined &&
+            creep.memory.target_room != creep.room.name) {
+                creep.moveTo(Game.flags["RoomToClaim2"])
+
+                // if (Game.rooms[creep.memory.target_room] != undefined) {
+                //     console.log("Move1:", creep.moveTo(Game.rooms[creep.memory.target_room]))
+                // }
+                // else {
+                //     console.log("Move2:",creep.moveTo(Game.flags["RoomToClaim2"]))
+                // }
             }
             else {
                 // Run roles

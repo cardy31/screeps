@@ -3,7 +3,7 @@ var body_conf = require('body_layouts')
 
 var conf = require('config')
 
-var myRooms = ['E33N41', 'E36N41']
+var myRooms = ['E33N41', 'E36N41', 'E37N42']
 
 var getRandomName = function(prefix){
     var name, isNameTaken, tries = 0;
