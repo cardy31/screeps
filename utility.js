@@ -139,15 +139,19 @@ var getMemory = function(role, room_name) {
     return {memory:{role: role, deliver: true, target: null, target_room: room_name}}
 }
 
+var sourceSpace = {
+    E33N41: [4, 2],
+    E36N41: [3, 4],
+    E37N42: [1, 4]
+}
+
 var census = function() {
     var myCreeps = Game.creeps
     var creepsByRoom = {}
     var creepNamesByRoom = {}
-    var i = 0
+    var sourcePop = {}
     // Count creeps in each controlled room
     for (const[key, val] of Object.entries(myCreeps)) {
-        i += 1
-        // console.log("That i",i)
         var creep = myCreeps[key]
         if (creep.memory.target_room != undefined &&
             creep.memory.target_room in creepsByRoom) {
@@ -158,6 +162,7 @@ var census = function() {
             creepsByRoom[creep.memory.target_room][creep.memory.role] = 1
         }
 
+        // Counting creeps by room
         if (creep.memory.target_room in creepNamesByRoom) {
             creepNamesByRoom[creep.memory.target_room].push(creep.name)
 
@@ -166,8 +171,20 @@ var census = function() {
             creepNamesByRoom[creep.memory.target_room] = []
             creepNamesByRoom[creep.memory.target_room].push(creep.name)
         }
+
+        // Count creeps at each source by room
+        if (!(creep.memory.target_room in sourcePop)) {
+            sourcePop[creep.memory.target_room] = []
+            var targ_length = sourceSpace[creep.memory.target_room].length
+            for (var i = 0; i < targ_length; i++) {
+                sourcePop[creep.memory.target_room].push(0)
+            }
+        }
+        if (creep.memory.target != null) {
+            sourcePop[creep.memory.target_room][creep.memory.target] += 1
+        }
     }
-    return [creepsByRoom, creepNamesByRoom]
+    return [creepsByRoom, creepNamesByRoom, sourcePop]
 }
 
 var clearOldMemory = function() {
@@ -227,4 +244,5 @@ module.exports = {
     getMemory: getMemory,
     census: census,
     clearOldMemory: clearOldMemory,
+    getSourceSpace: sourceSpace,
 };

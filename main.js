@@ -12,18 +12,22 @@ var roleUpgrader = require('role.upgrader')
 var roleRepairer = require('role.repairer')
 var roleRenew = require('role.renew')
 var roleWallRepairer = require('role.wallRepairer')
+util.clearOldMemory()
 
 module.exports.loop = function () {
     var ret = util.census()
     var creepsCountByRoom = ret[0]
     var creepsByRoom = ret[1]
+    var sourcePop = ret[2]
     var allCreeps = Game.creeps
     var allRooms = Game.rooms
 
-    util.clearOldMemory()
-
     for (key in Object.keys(util.myRooms)) {
         var room = Game.rooms[util.myRooms[key]]
+
+        room.sourceSpace = sourcePop[room.name]
+        room.sourceTrack = new Array(room.sourceSpace.length)
+
         if (room == undefined) {
             continue;
         }

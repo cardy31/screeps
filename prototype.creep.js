@@ -78,26 +78,30 @@ Creep.prototype.Harvest = function() {
         this.pickup(nearbyEnergy[0])
     }
     else if (this.memory.target == null){
-        if (sources.length == 2) {
-            if (sources[0].energy == 0) {
-                this.memory.target = 1
-            }
-            else if (sources[1].energy == 0) {
-                this.memory.target = 0
-            }
-            else {
-                if (util.selectorMagicNumber == 0) {
-                    this.memory.target = util.selectorMagicNumber
-                    util.selectorMagicNumber += 1
-                }
-                else {
-                    this.memory.target = util.selectorMagicNumber
-                    util.selectorMagicNumber = 0
-                }
-            }
+        if (sources.length == 1) {
+            this.memory.target = 0
         }
         else {
-            this.memory.target = 0
+            for (var i = 0; i < this.room.sourceSpace.length; i++) {
+                if (this.room.sourceTrack[i] < this.room.sourceSpace[i]) {
+                    this.memory.target = i
+                    break;
+                }
+            }
+
+            if (this.memory.target == null) {
+                var localMax = 0
+                var index = 0
+                for (var i = 0; i < this.room.sourceSpace.length; i++) {
+                    var quotient = this.room.sourceTrack[i] / this.room.sourceSpace[i]
+                    if (quotient > localMax) {
+                        localMax = quotient
+                        index = i
+                    }
+                }
+                this.memory.target = index
+                this.room.sourceTrack[i] += 1
+            }
         }
     }
 
@@ -152,7 +156,7 @@ Creep.prototype.StoreEnergy = function() {
         }
     }
     else {
-        this.Construct()
+        this.Upgrade()
     }
 };
 
