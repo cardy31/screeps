@@ -1,10 +1,10 @@
-require('require')
+// require('require')
 var conf = require('config')
 var body_conf = require('body_layouts')
 var towerControl = require('tower.control')
 
 var util = require('utility')
-roleAttacker = require('role.attacker')
+var roleAttacker = require('role.attacker')
 var roleBuilder = require('role.builder')
 var roleClaimer = require('role.claimer')
 var roleHarvester = require('role.harvester')
@@ -18,24 +18,25 @@ module.exports.loop = function () {
     var ret = util.census()
     var creepsCountByRoom = ret[0]
     var creepsByRoom = ret[1]
-    var sourcePop = ret[2]
+    var sourceTrack = ret[2]
     var allCreeps = Game.creeps
     var allRooms = Game.rooms
 
-    for (key in Object.keys(util.myRooms)) {
+    for (var key in Object.keys(util.myRooms)) {
         var room = Game.rooms[util.myRooms[key]]
-
-        room.sourceSpace = sourcePop[room.name]
-        room.sourceTrack = new Array(room.sourceSpace.length)
 
         if (room == undefined) {
             continue;
         }
 
+        // sourceSpace is the room that each source has for creeps
+        room.sourceSpace = util.sourceSpace[room.name]
+        // sourceTrack is the counted number of creeps assigned to each source
+        room.sourceTrack = sourceTrack[room.name]
+
         towerControl.runTowers(room.name)
 
         // Base case. This kicks off rebuilding if we go to zero
-        // console.log(room.name,room.find(FIND_MY_CREEPS).length)
         if (room.find(FIND_MY_CREEPS).length < 1) {
             util.getCorrectSpawn(room.name).spawnMyCreep('harvester', 1, room.name)
         }

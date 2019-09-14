@@ -3,7 +3,7 @@ var body_conf = require('body_layouts')
 
 var conf = require('config')
 
-var myRooms = ['E33N41', 'E36N41', 'E37N42']
+var myRooms = ['E33N41', 'E36N41', 'E37N42', 'sim']
 
 var getRandomName = function(prefix){
     var name, isNameTaken, tries = 0;
@@ -61,7 +61,7 @@ var getLevel = function(room_name) {
 }
 
 var getEmptyCreepCount = function() {
-    creepCount = {}
+    var creepCount = {}
     let roles = body_conf.getRoles()
     for (let i = 0; i < roles.length; i++) {
         creepCount[roles[i]] = 0
@@ -142,14 +142,15 @@ var getMemory = function(role, room_name) {
 var sourceSpace = {
     E33N41: [4, 2],
     E36N41: [3, 4],
-    E37N42: [1, 4]
+    E37N42: [1, 4],
+    SIM: [3, 3, 4],
 }
 
 var census = function() {
     var myCreeps = Game.creeps
     var creepsByRoom = {}
     var creepNamesByRoom = {}
-    var sourcePop = {}
+    var sourceTrack = {}
     // Count creeps in each controlled room
     for (const[key, val] of Object.entries(myCreeps)) {
         var creep = myCreeps[key]
@@ -173,18 +174,19 @@ var census = function() {
         }
 
         // Count creeps at each source by room
-        if (!(creep.memory.target_room in sourcePop)) {
-            sourcePop[creep.memory.target_room] = []
-            var targ_length = sourceSpace[creep.memory.target_room].length
+        if (!(creep.memory.target_room in sourceTrack)) {
+            sourceTrack[creep.memory.target_room] = []
+
+            var targ_length = Game.rooms[creep.memory.target_room].find(FIND_SOURCES).length
             for (var i = 0; i < targ_length; i++) {
-                sourcePop[creep.memory.target_room].push(0)
+                sourceTrack[creep.memory.target_room].push(0)
             }
         }
         if (creep.memory.target != null) {
-            sourcePop[creep.memory.target_room][creep.memory.target] += 1
+            sourceTrack[creep.memory.target_room][creep.memory.target] += 1
         }
     }
-    return [creepsByRoom, creepNamesByRoom, sourcePop]
+    return [creepsByRoom, creepNamesByRoom, sourceTrack]
 }
 
 var clearOldMemory = function() {
@@ -193,14 +195,6 @@ var clearOldMemory = function() {
             delete Memory.creeps[i];
         }
     }
-}
-
-var getHostileCreeps = function(room_name) {
-    return Game.rooms[room_name].find(FIND_HOSTILE_CREEPS);
-}
-
-var getInjuredCreeps = function(room_name) {
-    return Game.rooms[room_name].find(FIND_MY_CREEPS, {filter: (c) => c.hits < c.hitsMax});
 }
 
 var getCreepsByRoom = function() {
@@ -234,8 +228,6 @@ module.exports = {
     getCorrectSpawn: getCorrectSpawn,
     getRoomName: getRoomName,
     getSpawnName: getSpawnName,
-    getHostileCreeps: getHostileCreeps,
-    getInjuredCreeps: getInjuredCreeps,
     logJson: logJson,
     logError: logError,
     bodyRenewValid: bodyRenewValid,
@@ -244,5 +236,5 @@ module.exports = {
     getMemory: getMemory,
     census: census,
     clearOldMemory: clearOldMemory,
-    getSourceSpace: sourceSpace,
+    sourceSpace: sourceSpace,
 };

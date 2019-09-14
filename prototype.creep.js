@@ -79,11 +79,19 @@ Creep.prototype.Harvest = function() {
     }
     else if (this.memory.target == null){
         if (sources.length == 1) {
+            console.log("Only one source found")
+            this.memory.target = 0
+        }
+        else if (sources[0].energy == 0) {
+            this.memory.target = 1
+        }
+        else if (sources[1].energy == 0) {
             this.memory.target = 0
         }
         else {
             for (var i = 0; i < this.room.sourceSpace.length; i++) {
                 if (this.room.sourceTrack[i] < this.room.sourceSpace[i]) {
+                    console.log("Source",i,"is under capacity. Assigning.")
                     this.memory.target = i
                     break;
                 }
