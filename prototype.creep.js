@@ -79,34 +79,26 @@ Creep.prototype.Harvest = function() {
     }
     else if (this.memory.target == null){
         if (sources.length == 1) {
-            console.log("Only one source found")
-            this.memory.target = 0
-        }
-        else if (sources[0].energy == 0) {
-            this.memory.target = 1
-        }
-        else if (sources[1].energy == 0) {
             this.memory.target = 0
         }
         else {
+            var localMin = 100000
+            var index = 0
+
             for (var i = 0; i < this.room.sourceSpace.length; i++) {
+
                 if (this.room.sourceTrack[i] < this.room.sourceSpace[i]) {
-                    console.log("Source",i,"is under capacity. Assigning.")
                     this.memory.target = i
                     break;
                 }
-            }
 
-            if (this.memory.target == null) {
-                var localMax = 0
-                var index = 0
-                for (var i = 0; i < this.room.sourceSpace.length; i++) {
-                    var quotient = this.room.sourceTrack[i] / this.room.sourceSpace[i]
-                    if (quotient > localMax) {
-                        localMax = quotient
-                        index = i
-                    }
+                var quotient = this.room.sourceTrack[i] / this.room.sourceSpace[i]
+                if (quotient < localMin) {
+                    localMin = quotient
+                    index = i
                 }
+            }
+            if (this.memory.target == null) {
                 this.memory.target = index
                 this.room.sourceTrack[i] += 1
             }
@@ -117,6 +109,12 @@ Creep.prototype.Harvest = function() {
         this.moveTo(sources[this.memory.target]);
     }
 };
+
+// Creep.prototype.Mine = function() {
+//     this.memory.deliver = true
+//
+//
+// }
 
 Creep.prototype.Repair = function() {
     this.memory.deliver = true

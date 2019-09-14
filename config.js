@@ -4,7 +4,7 @@ module.exports = {
     TARG_BUILDERS:       [1, 3, 5, 4, 3, 2, 2, 1, 1],
     TARG_CLAIMERS:       [0, 0, 0, 0, 0, 0, 0, 0, 0],
     TARG_HARVESTERS:     [1, 2, 5, 4, 4, 2, 2, 1, 1],
-    TARG_REPAIRERS:      [0, 1, 2, 3, 2, 2, 2, 1, 1],
+    TARG_REPAIRERS:      [0, 1, 2, 0, 0, 0, 0, 0, 0],
     TARG_UPGRADERS:      [1, 4, 5, 4, 4, 4, 3, 3, 1],
     TARG_WALL_REPAIRERS: [0, 1, 2, 3, 2, 2, 2, 1, 1],
 
