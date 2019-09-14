@@ -22,15 +22,15 @@ module.exports.loop = function () {
     var allCreeps = Game.creeps
     var allRooms = Game.rooms
 
-    for (var key in Object.keys(util.myRooms)) {
-        var room = Game.rooms[util.myRooms[key]]
+    for (var key in Object.keys(conf.MY_ROOMS)) {
+        var room = Game.rooms[conf.MY_ROOMS[key]]
 
         if (room == undefined) {
             continue;
         }
 
         // sourceSpace is the room that each source has for creeps
-        room.sourceSpace = util.sourceSpace[room.name]
+        room.sourceSpace = conf.SOURCE_SPACE[room.name]
         // sourceTrack is the counted number of creeps assigned to each source
         room.sourceTrack = sourceTrack[room.name]
 

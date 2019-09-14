@@ -3,44 +3,9 @@ var body_conf = require('body_layouts')
 
 var conf = require('config')
 
-var myRooms = ['E33N41', 'E36N41', 'E37N42', 'sim']
-
-var getRandomName = function(prefix){
-    var name, isNameTaken, tries = 0;
-    do {
-        var nameArray = Math.random() > .5 ? names.names1 : names.names2;
-        name = nameArray[Math.floor(Math.random() * nameArray.length)];
-
-        if (tries > 3){
-            name += nameArray[Math.floor(Math.random() * nameArray.length)];
-        }
-
-        tries++;
-        isNameTaken = Game.creeps[name] !== undefined;
-    } while (isNameTaken);
-
-    return prefix+" "+name;
-};
-
-var getRandomInt = function(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-var getMyCreeps = function() {
-    return Game.spawns[getSpawnName()].room.find(FIND_CREEPS, {filter: (creep) => {return (creep.my)}});
-}
-
-var getEnemyCreeps = function() {
-    return Game.spawns[getSpawnName()].room.find(FIND_CREEPS, {filter: (creep) => {return (!creep.my)}});
-}
-
 var getExtensions = function(room_name) {
     return Game.rooms[room_name].find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_EXTENSION});
 }
-
-var selectorMagicNumber = 0
 
 var getRoomLevel = function(room_name) {
     return Game.rooms[room_name].controller.level
@@ -70,11 +35,11 @@ var getEmptyCreepCount = function() {
 }
 
 var getMainRoom = function() {
-    return Game.spawns[getSpawnName()].room
+    return Game.rooms[conf.MY_ROOMS[0]]
 }
 
 var getMainSpawn = function() {
-    return Game.spawns[getSpawnName()]
+    return getMainRoom().find(FIND_MY_SPAWNS)[0]
 }
 
 var getCorrectSpawn = function(room_name) {
@@ -87,16 +52,12 @@ var getCorrectSpawn = function(room_name) {
     }
 }
 
-var getRoomName = function() {
-    return Game.spawns[getSpawnName()].room.name
-}
-
-var getSpawnName = function() {
-    return names.spawnName
-}
-
 var logJson = function(thing_to_print) {
     console.log(JSON.stringify(thing_to_print))
+}
+
+var js = function(input) {
+    return JSON.stringify(input)
 }
 
 var logError = function(thing_to_print) {
@@ -133,17 +94,6 @@ var responseToString = function(responseCode) {
         default:
             return responseCode;
     }
-}
-
-var getMemory = function(role, room_name) {
-    return {memory:{role: role, deliver: true, target: null, target_room: room_name}}
-}
-
-var sourceSpace = {
-    E33N41: [4, 2],
-    E36N41: [3, 4],
-    E37N42: [1, 4],
-    SIM: [3, 3, 4],
 }
 
 var census = function() {
@@ -213,12 +163,10 @@ var getCreepsByRoom = function() {
 
 // Exports
 module.exports = {
-    getRandomInt: getRandomInt,
-    getRandomName: getRandomName,
+    bodyRenewValid: bodyRenewValid,
+    census: census,
+    clearOldMemory: clearOldMemory,
     getEmptyCreepCount: getEmptyCreepCount,
-    getSelectorMagicNumber: selectorMagicNumber,
-    getMyCreeps: getMyCreeps,
-    getEnemyCreeps: getEnemyCreeps,
     getExtensions: getExtensions,
     getRoomLevel: getRoomLevel,
     getCreepsByRoom: getCreepsByRoom,
@@ -226,15 +174,8 @@ module.exports = {
     getMainRoom: getMainRoom,
     getMainSpawn: getMainSpawn,
     getCorrectSpawn: getCorrectSpawn,
-    getRoomName: getRoomName,
-    getSpawnName: getSpawnName,
+    js: js,
     logJson: logJson,
     logError: logError,
-    bodyRenewValid: bodyRenewValid,
     responseToString: responseToString,
-    myRooms: myRooms,
-    getMemory: getMemory,
-    census: census,
-    clearOldMemory: clearOldMemory,
-    sourceSpace: sourceSpace,
 };
