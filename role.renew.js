@@ -1,4 +1,3 @@
-require('require')
 const util = require('utility')
 
 module.exports = {

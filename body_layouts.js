@@ -69,6 +69,17 @@ let bodyConfigs = {
         7: {},
         8: {},
     },
+    miner: {
+        0: {},
+        1: {work: 2, move: 1},
+        2: {work: 5, move: 1},
+        3: {work: 7, move: 2},
+        4: {},
+        5: {},
+        6: {},
+        7: {},
+        8: {},
+    },
     rangedAttacker: {
         0: {ranged_attack: 1, move: 2},
         1: {ranged_attack: 1, move: 2},

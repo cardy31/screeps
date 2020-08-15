@@ -1,9 +1,12 @@
+require('require')
 const conf = require('config')
 const roleAttacker = require('role.attacker')
 const roleBuilder = require('role.builder')
 const roleClaimer = require('role.claimer')
 const roleHarvester = require('role.harvester')
+const roleMiner = require('role.miner')
 const roleUpgrader = require('role.upgrader')
+const roleRampartRepairer = require('role.rampartRepairer')
 const roleRepairer = require('role.repairer')
 const roleRenew = require('role.renew')
 const roleWallRepairer = require('role.wallRepairer')
@@ -119,6 +122,12 @@ let runCreepRole = function(creep) {
             break;
         case 'harvester':
             roleHarvester.run(creep);
+            break;
+        case 'miner':
+            roleMiner.run(creep);
+            break;
+        case 'rampartRepairer':
+            roleRampartRepairer.run(creep);
             break;
         case 'repairer':
             roleRepairer.run(creep);
