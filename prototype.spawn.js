@@ -55,7 +55,7 @@ let getRandomName = function(prefix){
         }
 
         tries++;
-        isNameTaken = Game.creeps[name] !== undefined;
+        isNameTaken = Game.creeps[name] != null;
     } while (isNameTaken);
 
     return prefix+" "+name;

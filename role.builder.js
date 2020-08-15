@@ -5,7 +5,7 @@ module.exports = {
             creep.ResetMemoryFlags()
         }
 
-        if (creep.memory.target_room !== undefined && creep.memory.target_room !== creep.room.name) {
+        if (creep.memory.target_room != null && creep.memory.target_room !== creep.room.name) {
             creep.Travel()
         }
 

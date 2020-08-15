@@ -11,7 +11,7 @@ Creep.prototype.Attack = function() {
 Creep.prototype.Claim = function() {
     const flag = Game.flags["RoomToClaim2"]
     const room = flag.room
-    if (room === undefined) {
+    if (room == null) {
         this.moveTo(flag)
     }
     else {
@@ -26,7 +26,7 @@ Creep.prototype.Claim = function() {
 }
 
 Creep.prototype.Construct = function() {
-    this.memory.deliver = true
+    startDelivery(this)
 
     // Prioritize building extensions
     let extensions = this.room.find(FIND_CONSTRUCTION_SITES, {filter: (s) =>
@@ -86,6 +86,7 @@ Creep.prototype.Harvest = function() {
             for (let i = 0; i < this.room.energySourceAvailableSpace.length; i++) {
                 if (this.room.creepsAssignedToEnergySource[i] < this.room.energySourceAvailableSpace[i]) {
                     this.memory.target = i
+                    this.room.creepsAssignedToEnergySource[i]++
                     break;
                 }
 
@@ -97,7 +98,7 @@ Creep.prototype.Harvest = function() {
             }
             if (this.memory.target == null) {
                 this.memory.target = index
-                this.room.creepsAssignedToEnergySource[index] += 1
+                this.room.creepsAssignedToEnergySource[index]++
             }
         }
     }
@@ -108,7 +109,7 @@ Creep.prototype.Harvest = function() {
 };
 
 Creep.prototype.Repair = function() {
-    this.memory.deliver = true
+    startDelivery(this)
 
     // Find nearest structure needing repair
     let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
@@ -118,7 +119,7 @@ Creep.prototype.Repair = function() {
     });
 
     // If there is one, repair it
-    if (structure !== undefined) {
+    if (structure != null) {
         if (this.repair(structure) === ERR_NOT_IN_RANGE) {
             this.moveTo(structure);
         }
@@ -135,7 +136,7 @@ Creep.prototype.ResetMemoryFlags = function() {
 };
 
 Creep.prototype.StoreEnergy = function() {
-    this.memory.deliver = true
+    startDelivery(this)
 
     // Get possible energy transfer targets
     const structure = this.pos.findClosestByPath(FIND_STRUCTURES, { filter: (structure) => {
@@ -146,8 +147,7 @@ Creep.prototype.StoreEnergy = function() {
         }
     });
 
-    if (structure !== undefined) {
-        // Spawn
+    if (structure != null) {
         if (this.transfer(structure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
             this.moveTo(structure)
         }
@@ -173,24 +173,28 @@ Creep.prototype.Upgrade = function() {
 };
 
 Creep.prototype.WallRepair = function() {
-    this.memory.deliver = true
+    startDelivery(this)
 
-    // Find nearest structure needing repair
+    // Find nearest wall or rampart needing repair
     let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
         { filter: (s) => s.hits < conf.WALL_STRENGTH &&
                         (s.structureType === STRUCTURE_WALL ||
                         s.structureType === STRUCTURE_RAMPART)
     });
 
-    // If there is one, repair it
-    if (structure !== undefined) {
+    if (structure != null) {
         if (this.repair(structure) === ERR_NOT_IN_RANGE) {
             this.moveTo(structure);
         }
     }
-    // Otherwise build stuff
     else {
-        // console.log(this.name + " fell back on upgrading")
         this.Upgrade()
+    }
+}
+
+let startDelivery = function(creep) {
+    if (creep.memory.deliver === false) {
+        creep.memory.deliver = true
+        creep.room.creepsAssignedToEnergySource[creep.memory.target] -= 1
     }
 }

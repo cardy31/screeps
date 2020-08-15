@@ -20,7 +20,7 @@ let census = function() {
     // Count creeps in each controlled room
     for (const key of Object.keys(myCreeps)) {
         let creep = myCreeps[key]
-        if (creep.memory.target_room !== undefined) {
+        if (creep.memory.target_room != null) {
             if (creep.memory.target_room in creepsByRoom) {
                 creepsByRoom[creep.memory.target_room][creep.memory.role] += 1
             }
@@ -48,8 +48,8 @@ let census = function() {
                 creepsAssignedToEnergySource[creep.memory.target_room].push(0)
             }
         }
-        if (creep.memory.target != null) {
-            creepsAssignedToEnergySource[creep.memory.target_room][creep.memory.target] += 1
+        if (creep.memory.target != null && creep.memory.deliver === false) {
+            creepsAssignedToEnergySource[creep.memory.target_room][creep.memory.target]++
         }
     }
     return [creepsByRoom, creepNamesByRoom, creepsAssignedToEnergySource]

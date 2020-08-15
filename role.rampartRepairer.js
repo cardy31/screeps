@@ -4,7 +4,7 @@ let roleWallRepairer = require('role.wallRepairer');
 module.exports = {
     run: function(creep) {
         // Send to a different room
-        if (creep.memory.target !== undefined && creep.room.name !== creep.memory.target) {
+        if (creep.memory.target != null && creep.room.name !== creep.memory.target) {
             // Find exit to target room
             let exit = creep.room.findExitTo(creep.memory.target);
             // Move to exit
@@ -26,21 +26,22 @@ module.exports = {
                 filter: (s) => s.structureType === STRUCTURE_RAMPART
             });
 
-            let target = undefined;
+            let target = null
 
             for (let percentage = 0.0001; percentage < 1; percentage += 0.0001) {
 
                 for (let rampart of ramparts) {
                     if (rampart.hits / rampart.hitsMax < percentage) {
-                        target = rampart;
-                        break;
+                        target = rampart
+                        break
                     }
                 }
 
-                if (target !== undefined)
-                    break;
+                if (target != null) {
+                    break
+                }
             }
-            if (target !== undefined) {
+            if (target != null) {
                 if (creep.repair(target) === ERR_NOT_IN_RANGE)
                     creep.moveTo(target);
             }

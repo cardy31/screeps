@@ -18,7 +18,7 @@ module.exports.loop = function () {
 
     for (let key in Object.keys(conf.MY_ROOMS)) {
         const room = Game.rooms[conf.MY_ROOMS[key]]
-        if (room === undefined) {
+        if (room == null) {
             continue;
         }
 
@@ -28,14 +28,13 @@ module.exports.loop = function () {
 
         room.energySourceAvailableSpace = conf.SOURCE_AVAILABLE_SPACE[room.name] // the room that each source has for creeps
         room.creepsAssignedToEnergySource = creepsAssignedToEnergySource[room.name] // the counted number of creeps assigned to each source
-
         towerControl.runTowers(room.name)
 
         const currentLevel = util.getLevel(room.name)
         const energyAvailable = room.energyAvailable
         let creepCount = creepsCountByRoom[room.name]
 
-        if (creepCount === undefined) {
+        if (creepCount == null) {
             creepCount = util.getEmptyCreepCount()
         }
 
@@ -46,7 +45,7 @@ module.exports.loop = function () {
         }
 
         let creepsForRoom = creepsByRoom[room.name]
-        if (creepsForRoom === undefined) {
+        if (creepsForRoom == null) {
             creepsForRoom = util.getEmptyCreepCount()
         }
         for (let i = 0; i < creepsForRoom.length; i++) {
