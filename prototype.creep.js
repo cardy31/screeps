@@ -25,6 +25,47 @@ Creep.prototype.Claim = function() {
     }
 }
 
+Creep.prototype.CollectEnergy = function() {
+    const sources = this.room.find(FIND_SOURCES);
+
+    const nearbyEnergy = findNearbyEnergy(this)
+
+    if (nearbyEnergy.length > 0) {
+        this.pickup(nearbyEnergy[0])
+    }
+    else if (this.memory.target == null){
+        if (sources.length === 1) {
+            this.memory.target = 0
+        } else {
+            let valueOfLeastCongestedEnergySource = 100000
+            let index = 0
+
+            // TODO: Change this to track congestion on containers
+            for (let i = 0; i < this.room.energySourceAvailableSpace.length; i++) {
+                if (this.room.creepsAssignedToEnergySource[i] < this.room.energySourceAvailableSpace[i]) {
+                    this.memory.target = i
+                    this.room.creepsAssignedToEnergySource[i]++
+                    break;
+                }
+
+                let energySourceCongestion = this.room.creepsAssignedToEnergySource[i] / this.room.energySourceAvailableSpace[i]
+                if (energySourceCongestion < valueOfLeastCongestedEnergySource) {
+                    valueOfLeastCongestedEnergySource = energySourceCongestion
+                    index = i
+                }
+            }
+            if (this.memory.target == null) {
+                this.memory.target = index
+                this.room.creepsAssignedToEnergySource[index]++
+            }
+        }
+    }
+
+    if(this.memory.target != null && this.harvest(sources[this.memory.target]) === ERR_NOT_IN_RANGE) {
+        this.moveTo(sources[this.memory.target]);
+    }
+}
+
 Creep.prototype.Construct = function() {
     this.StartDelivery()
 
@@ -68,49 +109,24 @@ Creep.prototype.DeliveryIsFinished = function() {
     return this.store[RESOURCE_ENERGY] === 0 && this.memory.deliver
 }
 
-Creep.prototype.Harvest = function() {
-    const sources = this.room.find(FIND_SOURCES);
+Creep.prototype.Mine = function() {
+    if (this.ticksToLive === 1 && this.memory.mining_target != null) {
+        this.room.creepsAssignedToEnergySource[this.memory.mining_target]--
+    } else {
+        const sources = this.room.find(FIND_SOURCES);
 
-    let nearbyEnergy = this.pos.findInRange(
-        FIND_DROPPED_RESOURCES,
-        1,
-    {filter: (r) => r.resourceType === RESOURCE_ENERGY});
-
-    if (nearbyEnergy.length > 0) {
-        this.pickup(nearbyEnergy[0])
-    }
-    else if (this.memory.target == null){
         if (sources.length === 1) {
             this.memory.target = 0
-        }
-        else {
-            let valueOfLeastCongestedEnergySource = 100000
-            let index = 0
-
+        } else if (this.memory.mining_target == null) {
             for (let i = 0; i < this.room.energySourceAvailableSpace.length; i++) {
                 if (this.room.creepsAssignedToEnergySource[i] < this.room.energySourceAvailableSpace[i]) {
-                    this.memory.target = i
+                    this.memory.mining_target = i
                     this.room.creepsAssignedToEnergySource[i]++
-                    break;
                 }
-
-                let energySourceCongestion = this.room.creepsAssignedToEnergySource[i] / this.room.energySourceAvailableSpace[i]
-                if (energySourceCongestion < valueOfLeastCongestedEnergySource) {
-                    valueOfLeastCongestedEnergySource = energySourceCongestion
-                    index = i
-                }
-            }
-            if (this.memory.target == null) {
-                this.memory.target = index
-                this.room.creepsAssignedToEnergySource[index]++
             }
         }
     }
-
-    if(this.memory.target != null && this.harvest(sources[this.memory.target]) === ERR_NOT_IN_RANGE) {
-        this.moveTo(sources[this.memory.target]);
-    }
-};
+}
 
 Creep.prototype.Repair = function() {
     this.StartDelivery()
@@ -250,8 +266,15 @@ Creep.prototype.Work = function(jobToPerform, context) {
     if (this.ShouldMoveToDifferentRoom()) {
         this.Travel()
     } else if (this.ShouldCollectEnergy()) {
-        this.Harvest()
+        this.CollectEnergy()
     } else {
         jobToPerform.apply(context)
     }
+}
+
+let findNearbyEnergy = function(creep) {
+    return creep.pos.findInRange(
+        FIND_DROPPED_RESOURCES,
+        1,
+        {filter: (r) => r.resourceType === RESOURCE_ENERGY});
 }

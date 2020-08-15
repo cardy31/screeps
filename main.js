@@ -91,6 +91,11 @@ let spawnCreeps = function(creepCount, currentLevel, roomName) {
     }
 }
 
+let shouldSpawnMiner = function(roomName, creepCount) {
+    const containers = util.getContainers(roomName)
+    return creepCount['miner'] < containers.length && creepCount['harvester'] >= 2
+}
+
 let renewCreep = function(creep) {
     console.log("Renewing " + creep.name)
 

@@ -63,8 +63,10 @@ let clearOldMemory = function() {
     }
 }
 
-let getContainers = function(room_name) {
-    return Game.rooms[room_name].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}});
+let getContainers = function(roomName) {
+    return Game.rooms[roomName].find(FIND_STRUCTURES, {
+        filter: { structureType: STRUCTURE_CONTAINER }
+    });
 }
 
 let getCorrectSpawn = function(room_name) {
