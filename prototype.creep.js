@@ -26,7 +26,7 @@ Creep.prototype.Claim = function() {
 }
 
 Creep.prototype.Construct = function() {
-    startDelivery(this)
+    this.StartDelivery()
 
     // Prioritize building extensions
     let extensions = this.room.find(FIND_CONSTRUCTION_SITES, {filter: (s) =>
@@ -63,6 +63,10 @@ Creep.prototype.Construct = function() {
         }
     }
 };
+
+Creep.prototype.DeliveryIsFinished = function() {
+    return this.store[RESOURCE_ENERGY] === 0 && this.memory.deliver
+}
 
 Creep.prototype.Harvest = function() {
     const sources = this.room.find(FIND_SOURCES);
@@ -109,7 +113,7 @@ Creep.prototype.Harvest = function() {
 };
 
 Creep.prototype.Repair = function() {
-    startDelivery(this)
+    this.StartDelivery()
 
     // Find nearest structure needing repair
     let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
@@ -130,13 +134,59 @@ Creep.prototype.Repair = function() {
     }
 }
 
+Creep.prototype.RepairRamparts = function() {
+    this.StartDelivery()
+
+    let ramparts = this.room.find(FIND_STRUCTURES, {
+        filter: (s) => s.structureType === STRUCTURE_RAMPART
+    });
+
+    let target = null
+
+    for (let percentage = 0.0000; percentage < 1; percentage += 0.01) {
+        for (let rampart of ramparts) {
+            if (rampart.hits / rampart.hitsMax < percentage) {
+                target = rampart
+                break
+            }
+        }
+
+        if (target != null) {
+            break
+        }
+    }
+    if (target != null) {
+        if (this.repair(target) === ERR_NOT_IN_RANGE) {
+            this.moveTo(target);
+        }
+    }
+    else {
+        this.WallRepair()
+    }
+}
+
 Creep.prototype.ResetMemoryFlags = function() {
     this.memory.deliver = false
     this.memory.target = null
 };
 
+Creep.prototype.ShouldCollectEnergy = function() {
+    return this.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && this.memory.deliver === false
+}
+
+Creep.prototype.ShouldMoveToDifferentRoom = function() {
+    return this.memory.target_room != null && this.memory.target_room !== this.room.name
+}
+
+Creep.prototype.StartDelivery = function() {
+    if (this.memory.deliver === false) {
+        this.memory.deliver = true
+        this.room.creepsAssignedToEnergySource[this.memory.target] -= 1
+    }
+}
+
 Creep.prototype.StoreEnergy = function() {
-    startDelivery(this)
+    this.StartDelivery()
 
     // Get possible energy transfer targets
     const structure = this.pos.findClosestByPath(FIND_STRUCTURES, { filter: (structure) => {
@@ -173,7 +223,7 @@ Creep.prototype.Upgrade = function() {
 };
 
 Creep.prototype.WallRepair = function() {
-    startDelivery(this)
+    this.StartDelivery()
 
     // Find nearest wall or rampart needing repair
     let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
@@ -192,9 +242,16 @@ Creep.prototype.WallRepair = function() {
     }
 }
 
-let startDelivery = function(creep) {
-    if (creep.memory.deliver === false) {
-        creep.memory.deliver = true
-        creep.room.creepsAssignedToEnergySource[creep.memory.target] -= 1
+Creep.prototype.Work = function(jobToPerform, context) {
+    if (this.DeliveryIsFinished()) {
+        this.ResetMemoryFlags()
+    }
+
+    if (this.ShouldMoveToDifferentRoom()) {
+        this.Travel()
+    } else if (this.ShouldCollectEnergy()) {
+        this.Harvest()
+    } else {
+        jobToPerform.apply(context)
     }
 }

@@ -12,7 +12,6 @@ let getRooms = function() {
 let sourceAvailableSpace = function() {
     const sourceZeroSpace = 4
     const sourceOneSpace = 1
-    console.log(getRooms()[0].name)
     return {
         [getRooms()[0].name]: [sourceZeroSpace, sourceOneSpace],
     }
@@ -22,12 +21,12 @@ let sourceAvailableSpace = function() {
 module.exports = {
     CREEP_TARGETS: {
         'attacker':     [0, 0, 1, 1, 1, 1, 1, 1, 1],
-        'builder':      [1, 3, 5, 4, 3, 2, 2, 1, 1],
+        'builder':      [1, 3, 4, 4, 3, 2, 2, 1, 1],
         'claimer':      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        'harvester':    [1, 2, 5, 4, 4, 2, 2, 1, 1],
+        'harvester':    [1, 2, 4, 4, 4, 2, 2, 1, 1],
         'repairer':     [0, 1, 2, 0, 0, 0, 0, 0, 0],
-        'upgrader':     [1, 4, 5, 4, 4, 4, 3, 3, 1],
-        'wallRepairer': [0, 1, 2, 3, 2, 2, 2, 1, 1],
+        'upgrader':     [1, 4, 4, 4, 4, 4, 3, 3, 1],
+        'wallRepairer': [0, 1, 1, 3, 2, 2, 2, 1, 1],
     },
     MAX_LEVEL_PLANNED: 5,
     MY_ROOMS: ['W15S58'],
