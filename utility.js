@@ -100,19 +100,31 @@ let getEmptyCreepCount = function() {
     return creepCount
 }
 
-let getExtensions = function(room_name) {
-    return Game.rooms[room_name].find(FIND_STRUCTURES, {filter: (s) => s.structureType === STRUCTURE_EXTENSION});
+let getExtensions = function(roomName) {
+    return Game.rooms[roomName].find(FIND_STRUCTURES, {filter: (s) => s.structureType === STRUCTURE_EXTENSION});
 }
 
-let getLevel = function(room_name) {
-    let level = getRoomLevel(room_name)
-    while (levelShouldBeAdjusted) {
+let getLevel = function(roomName) {
+    let level = getRoomLevel(roomName)
+    while (levelShouldBeAdjusted(roomName, level)) {
         level -= 1
         if (level === 1) {
             break;
         }
     }
     return level
+}
+
+let getRoomLevel = function(roomName) {
+    return Game.rooms[roomName].controller.level
+}
+
+let levelShouldBeAdjusted = function(roomName, level) {
+    return roomHasRequiredNumberOfExtensions(roomName, level) || level > conf.MAX_LEVEL_PLANNED
+}
+
+let roomHasRequiredNumberOfExtensions = function(roomName, level) {
+    return getExtensions(roomName).length < conf.TARG_EXTENSIONS[level]
 }
 
 let getMainSpawn = function() {
@@ -123,28 +135,16 @@ let getMainRoom = function() {
     return Game.rooms[conf.MY_ROOMS[0]]
 }
 
-let getRoomLevel = function(room_name) {
-    return Game.rooms[room_name].controller.level
-}
-
-let levelShouldBeAdjusted = function(room_name, level) {
-    return roomHasRequiredNumberOfExtensions || level > conf.MAX_LEVEL_PLANNED
-}
-
-let roomHasRequiredNumberOfExtensions = function(room_name, level) {
-    return getExtensions(room_name).length < conf.TARG_EXTENSIONS[level] && level > 1
-}
-
 let to_json = function(input) {
     return JSON.stringify(input)
 }
 
-let logError = function(thing_to_print) {
-    console.log("ERROR: " + thing_to_print)
+let logError = function(thingToLog) {
+    console.log("ERROR: " + thingToLog)
 }
 
-let logJson = function(thing_to_print) {
-    console.log(JSON.stringify(thing_to_print))
+let logJson = function(thingToLog) {
+    console.log(JSON.stringify(thingToLog))
 }
 
 let responseToString = function(responseCode) {

@@ -1,3 +1,23 @@
+let getRooms = function() {
+    let rooms = []
+    Object.values(Game.spawns).forEach((spawn) => {
+        let room = spawn.room
+        if (room != null) {
+            rooms.push(room)
+        }
+    })
+    return rooms
+}
+
+let sourceAvailableSpace = function() {
+    const sourceZeroSpace = 4
+    const sourceOneSpace = 1
+    console.log(getRooms()[0].name)
+    return {
+        [getRooms()[0].name]: [sourceZeroSpace, sourceOneSpace],
+    }
+}
+
 // Note: These array are written assuming 1-indexed levels accessing them (ie. [0] is rarely used)
 module.exports = {
     CREEP_TARGETS: {
@@ -14,8 +34,7 @@ module.exports = {
     RENEW: false,
     ROLES_IN_PRIORITY_ORDER: ['claimer', 'harvester', 'upgrader', 'builder', 'repairer', 'wallRepairer', 'attacker'],
     SOURCE_AVAILABLE_SPACE: {
-        W15S58: [4, 1],
-        SIM: [3, 3, 4],
+        'W15S58': [4, 1],
     },
     TARG_ENERGY: [0, 250, 500, 750, 1100, 1600, 2150, 2500, 2500],
     TARG_EXTENSIONS: [0, 0, 5, 10, 20, 30, 40, 50, 60],
