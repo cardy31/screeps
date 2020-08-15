@@ -2,9 +2,9 @@ const roleBuilder = require('role.builder');
 
 module.exports = {
     run: function(creep) {
-        // Reset flags when creep is out of energy on a delivery
+        // ResetMemoryFlags flags when creep is out of energy on a delivery
         if (creep.carry.energy === 0 && creep.memory.deliver) {
-            creep.Reset()
+            creep.ResetMemoryFlags()
         }
 
         if (creep.memory.target_room !== undefined && creep.memory.target_room !== creep.room.name) {

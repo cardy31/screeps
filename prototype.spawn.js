@@ -1,6 +1,4 @@
-// var util = require('utility')
 const body_conf = require('body_layouts')
-const conf = require('config')
 const names = require('names')
 const util = require('utility')
 

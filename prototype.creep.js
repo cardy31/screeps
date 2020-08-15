@@ -3,14 +3,13 @@ const conf = require('config')
 
 Creep.prototype.Attack = function() {
     let hostiles = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS)
-    if (hostiles !== null && this.attack(hostiles[0] === ERR_NOT_IN_RANGE)) {
+    if (hostiles != null && this.attack(hostiles[0]) === ERR_NOT_IN_RANGE) {
         this.moveTo(hostiles[0])
     }
 }
 
 Creep.prototype.Claim = function() {
     const flag = Game.flags["RoomToClaim2"]
-    // this.moveTo(flag)
     const room = flag.room
     if (room === undefined) {
         this.moveTo(flag)
@@ -20,9 +19,9 @@ Creep.prototype.Claim = function() {
             console.log(this.name + "Moving towards controller")
             this.moveTo(flag.room.controller)
         }
-        // else {
-        //     util.logError("Claim is going poorly")
-        // }
+        else {
+            util.logError("Claim is going poorly")
+        }
     }
 }
 
@@ -44,27 +43,26 @@ Creep.prototype.Construct = function() {
         let site = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
 
         // If there is one, build it
-        if (site !== null) {
+        if (site != null) {
             if (this.build(site) === ERR_NOT_IN_RANGE) {
                 this.moveTo(site)
             }
         }
-        // No construction sites. Fall back to upgrading
         else {
-            // console.log(this.creep.room.name, "has no building sites!")
             if (this.room.energyAvailable < this.room.energyCapacityAvailable) {
-                // console.log(this.name + " falling back to storing energy")
                 this.StoreEnergy()
             }
             else {
-                // console.log(this.name + " falling back to wall repair")
-                this.WallRepair()
+                if (this.memory.role === 'wallRepair') {
+                    this.Upgrade()
+                }
+                else {
+                    this.WallRepair()
+                }
             }
         }
     }
 };
-
-Creep.selector = 0
 
 Creep.prototype.Harvest = function() {
     const sources = this.room.find(FIND_SOURCES);
@@ -82,27 +80,24 @@ Creep.prototype.Harvest = function() {
             this.memory.target = 0
         }
         else {
-            let localMin = 100000
+            let valueOfLeastCongestedEnergySource = 100000
             let index = 0
 
-            let i;
-            for (i = 0; i < this.room.sourceSpace.length; i++) {
-
-                if (this.room.sourceTrack[i] < this.room.sourceSpace[i]) {
+            for (let i = 0; i < this.room.energySourceAvailableSpace.length; i++) {
+                if (this.room.creepsAssignedToEnergySource[i] < this.room.energySourceAvailableSpace[i]) {
                     this.memory.target = i
                     break;
                 }
 
-                // TODO: Improve this code to make it clear what it accomplishes
-                let quotient = this.room.sourceTrack[i] / this.room.sourceSpace[i]
-                if (quotient < localMin) {
-                    localMin = quotient
+                let energySourceCongestion = this.room.creepsAssignedToEnergySource[i] / this.room.energySourceAvailableSpace[i]
+                if (energySourceCongestion < valueOfLeastCongestedEnergySource) {
+                    valueOfLeastCongestedEnergySource = energySourceCongestion
                     index = i
                 }
             }
             if (this.memory.target == null) {
                 this.memory.target = index
-                this.room.sourceTrack[i] += 1
+                this.room.creepsAssignedToEnergySource[index] += 1
             }
         }
     }
@@ -111,12 +106,6 @@ Creep.prototype.Harvest = function() {
         this.moveTo(sources[this.memory.target]);
     }
 };
-
-// Creep.prototype.Mine = function() {
-//     this.memory.deliver = true
-//
-//
-// }
 
 Creep.prototype.Repair = function() {
     this.memory.deliver = true
@@ -140,7 +129,7 @@ Creep.prototype.Repair = function() {
     }
 }
 
-Creep.prototype.Reset = function() {
+Creep.prototype.ResetMemoryFlags = function() {
     this.memory.deliver = false
     this.memory.target = null
 };
@@ -149,7 +138,7 @@ Creep.prototype.StoreEnergy = function() {
     this.memory.deliver = true
 
     // Get possible energy transfer targets
-    var structure = this.pos.findClosestByPath(FIND_STRUCTURES, { filter: (structure) => {
+    const structure = this.pos.findClosestByPath(FIND_STRUCTURES, { filter: (structure) => {
             return ((structure.structureType === STRUCTURE_SPAWN ||
                     structure.structureType === STRUCTURE_EXTENSION ||
                     structure.structureType === STRUCTURE_TOWER) &&
@@ -169,9 +158,8 @@ Creep.prototype.StoreEnergy = function() {
 };
 
 Creep.prototype.Travel = function() {
-    var ret = this.moveTo(Game.rooms[this.memory.target_room].controller)
-    // var ret = this.moveTo(Game.flags["RoomToClaim2"])
-    if (ret === ERR_INVALID_TARGET) {
+    const moveReturnValue = this.moveTo(Game.rooms[this.memory.target_room].controller)
+    if (moveReturnValue === ERR_INVALID_TARGET) {
         util.logError("Invalid target on creep", this.name)
     }
 }

@@ -1,7 +1,4 @@
 const conf = require('config')
-const towerControl = require('tower.control')
-
-const util = require('utility')
 const roleAttacker = require('role.attacker')
 const roleBuilder = require('role.builder')
 const roleClaimer = require('role.claimer')
@@ -10,121 +7,130 @@ const roleUpgrader = require('role.upgrader')
 const roleRepairer = require('role.repairer')
 const roleRenew = require('role.renew')
 const roleWallRepairer = require('role.wallRepairer')
+const towerControl = require('tower.control')
+const util = require('utility')
+
 util.clearOldMemory()
 
 module.exports.loop = function () {
-    const ret = util.census()
-    const creepsCountByRoom = ret[0]
-    const creepsByRoom = ret[1]
-    const sourceTrack = ret[2]
+    const [creepsCountByRoom, creepsByRoom, creepsAssignedToEnergySource] = util.census()
     const allCreeps = Game.creeps
 
     for (let key in Object.keys(conf.MY_ROOMS)) {
         const room = Game.rooms[conf.MY_ROOMS[key]]
-
         if (room === undefined) {
             continue;
         }
 
-        // sourceSpace is the room that each source has for creeps
-        room.sourceSpace = conf.SOURCE_SPACE[room.name]
-        // sourceTrack is the counted number of creeps assigned to each source
-        room.sourceTrack = sourceTrack[room.name]
+        if (roomHasNoCreeps(room)) {
+            spawnStarterCreep(room)
+        }
+
+        room.energySourceAvailableSpace = conf.SOURCE_AVAILABLE_SPACE[room.name] // the room that each source has for creeps
+        room.creepsAssignedToEnergySource = creepsAssignedToEnergySource[room.name] // the counted number of creeps assigned to each source
 
         towerControl.runTowers(room.name)
 
-        // Base case. This kicks off rebuilding if we go to zero
-        if (room.find(FIND_MY_CREEPS).length < 1) {
-            util.getCorrectSpawn(room.name).spawnMyCreep('harvester', 1, room.name)
-        }
-
-        const current_level = util.getLevel(room.name)
-        const energyAvail = room.energyAvailable
+        const currentLevel = util.getLevel(room.name)
+        const energyAvailable = room.energyAvailable
         let creepCount = creepsCountByRoom[room.name]
 
         if (creepCount === undefined) {
             creepCount = util.getEmptyCreepCount()
         }
 
-        console.log(room.name + ":", JSON.stringify(creepCount), "level:", current_level)
+        logRoomStatus(room, creepCount, currentLevel)
 
-        // Spawn any new creeps needed
-        if (energyAvail >= conf.TARG_ENERGY[current_level]) {
-            if (creepCount['claimer'] < conf.TARG_CLAIMERS[current_level]) {
-                util.getCorrectSpawn(room.name).spawnMyCreep('claimer', current_level, room.name)
-            }
-            else if (creepCount['harvester'] < conf.TARG_HARVESTERS[current_level]) {
-                util.getCorrectSpawn(room.name).spawnMyCreep('harvester', current_level, room.name)
-            }
-            else if (creepCount['upgrader'] < conf.TARG_UPGRADERS[current_level]) {
-                util.getCorrectSpawn(room.name).spawnMyCreep('upgrader', current_level, room.name)
-            }
-            else if (creepCount['builder'] < conf.TARG_BUILDERS[current_level]) {
-                util.getCorrectSpawn(room.name).spawnMyCreep('builder', current_level, room.name)
-            }
-            else if (creepCount['repairer'] < conf.TARG_REPAIRERS[current_level]) {
-                util.getCorrectSpawn(room.name).spawnMyCreep('repairer', current_level, room.name)
-            }
-            else if (creepCount['wallRepairer'] < conf.TARG_WALL_REPAIRERS[current_level]) {
-                util.getCorrectSpawn(room.name).spawnMyCreep('wallRepairer', current_level, room.name)
-            }
-            else if (creepCount['attacker'] < conf.TARG_ATTACKERS[current_level]) {
-                util.getCorrectSpawn(room.name).spawnMyCreep('attacker', current_level, room.name)
-            }
+        if (shouldSpawnCreeps(energyAvailable, currentLevel)) {
+            spawnCreeps(creepCount, currentLevel, room.name)
         }
 
-        // Run various creep programs
         let creepsForRoom = creepsByRoom[room.name]
         if (creepsForRoom === undefined) {
             creepsForRoom = util.getEmptyCreepCount()
         }
         for (let i = 0; i < creepsForRoom.length; i++) {
+            // TODO: This allCreeps step shouldn't be necessary
             let creep = allCreeps[creepsForRoom[i]]
-
-            // Renew old creeps that are still at the correct level
-            if (conf.RENEW && ((creep.memory.renew ||
-                (creep.ticksToLive < 100 && util.bodyRenewValid(creep, current_level))) &&
-                energyAvail >= 150))
-            {
-                console.log(creep.name + " renewing")
-
-                if (creep.ticksToLive < 1400) {
-                    creep.memory.renew = true
-                    roleRenew.run(creep)
-                }
-                else {
-                    creep.memory.renew = false
-                }
+            if (creepShouldBeRenewed(creep, currentLevel, energyAvailable)) {
+                renewCreep(creep)
             }
             else {
-                // Run roles
-                switch(creep.memory.role) {
-                    case 'attacker':
-                        roleAttacker.run(creep);
-                        break;
-                    case 'builder':
-                        roleBuilder.run(creep);
-                        break;
-                    case 'claimer':
-                        roleClaimer.run(creep);
-                        break;
-                    case 'harvester':
-                        roleHarvester.run(creep);
-                        break;
-                    case 'repairer':
-                        roleRepairer.run(creep);
-                        break;
-                    case 'upgrader':
-                        roleUpgrader.run(creep);
-                        break;
-                    case 'wallRepairer':
-                        roleWallRepairer.run(creep);
-                        break;
-                    default:
-                        util.logError(creep.name, "was not assigned a role")
-                }
+                runCreepRole(creep)
             }
         }
     }
-    console.log()
+}
+
+let roomHasNoCreeps = function(room) {
+    return room.find(FIND_MY_CREEPS).length < 1
+}
+
+let spawnStarterCreep = function(room) {
+    util.getCorrectSpawn(room.name).spawnMyCreep('harvester', 1, room.name)
+}
+
+let logRoomStatus = function(room, creepCount, currentLevel) {
+    console.log(room.name + ":", JSON.stringify(creepCount), "level:", currentLevel)
+}
+
+let shouldSpawnCreeps = function(energyAvailable, currentLevel) {
+    return energyAvailable >= conf.TARG_ENERGY[currentLevel]
+}
+
+let spawnCreeps = function(creepCount, currentLevel, roomName) {
+    const spawn = util.getCorrectSpawn(roomName)
+    for (let i = 0; i < conf.ROLES_IN_PRIORITY_ORDER.length; i++) {
+        let role = conf.ROLES_IN_PRIORITY_ORDER[i]
+        if (creepCount[role] < conf.CREEP_TARGETS[role][currentLevel]) {
+            spawn.spawnMyCreep(role, currentLevel, roomName)
+            break;
+        }
+    }
+}
+
+let renewCreep = function(creep) {
+    console.log("Renewing " + creep.name)
+
+    if (creep.ticksToLive < 1400) {
+        creep.memory.renew = true
+        roleRenew.run(creep)
+    }
+    else {
+        creep.memory.renew = false
+    }
+}
+
+let creepShouldBeRenewed = function(creep, current_level, energyAvailable) {
+    return conf.RENEW &&
+        ((creep.memory.renew || (creep.ticksToLive < 100 && util.bodyRenewValid(creep, current_level))) && energyAvailable >= 150)
+}
+
+let runCreepRole = function(creep) {
+    // TODO: Add miners on top of containers https://www.reddit.com/r/screeps/comments/4x8z65/whats_the_best_strategy_for_gathering_energy/
+    switch(creep.memory.role) {
+        case 'attacker':
+            roleAttacker.run(creep);
+            break;
+        case 'builder':
+            roleBuilder.run(creep);
+            break;
+        case 'claimer':
+            roleClaimer.run(creep);
+            break;
+        case 'harvester':
+            roleHarvester.run(creep);
+            break;
+        case 'repairer':
+            roleRepairer.run(creep);
+            break;
+        case 'upgrader':
+            roleUpgrader.run(creep);
+            break;
+        case 'wallRepairer':
+            roleWallRepairer.run(creep);
+            break;
+        default:
+            util.logError(creep.name, "was not assigned a role")
+    }
 }

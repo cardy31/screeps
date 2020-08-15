@@ -23,6 +23,7 @@ Available Energy Per Level
 8: 6300
 */
 
+// Note: These array are written assuming 1-indexed levels accessing them (ie. [0] is rarely used)
 let bodyConfigs = {
     attacker: {
         0: {attack: 2, move: 2},
