@@ -1,22 +1,22 @@
-var util = require('utility')
-var conf = require('config')
+const util = require('utility')
+const conf = require('config')
 
 Creep.prototype.Attack = function() {
-    var hostiles = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS)
-    if (hostiles != undefined && this.attack(hostiles[0] == ERR_NOT_IN_RANGE)) {
+    let hostiles = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS)
+    if (hostiles !== null && this.attack(hostiles[0] === ERR_NOT_IN_RANGE)) {
         this.moveTo(hostiles[0])
     }
 }
 
 Creep.prototype.Claim = function() {
-    var flag = Game.flags["RoomToClaim2"]
+    const flag = Game.flags["RoomToClaim2"]
     // this.moveTo(flag)
-    var room = flag.room
-    if (room == undefined) {
+    const room = flag.room
+    if (room === undefined) {
         this.moveTo(flag)
     }
     else {
-        if (this.claimController(room.controller) == ERR_NOT_IN_RANGE) {
+        if (this.claimController(room.controller) === ERR_NOT_IN_RANGE) {
             console.log(this.name + "Moving towards controller")
             this.moveTo(flag.room.controller)
         }
@@ -30,18 +30,18 @@ Creep.prototype.Construct = function() {
     this.memory.deliver = true
 
     // Prioritize building extensions
-    var extensions = this.room.find(FIND_CONSTRUCTION_SITES, {filter: (s) =>
-    s.structureType == STRUCTURE_EXTENSION ||
-    s.structureType == STRUCTURE_WALL});
+    let extensions = this.room.find(FIND_CONSTRUCTION_SITES, {filter: (s) =>
+    s.structureType === STRUCTURE_EXTENSION ||
+    s.structureType === STRUCTURE_WALL});
 
-    if (extensions.length != 0) {
+    if (extensions.length !== 0) {
         if (this.build(extensions[0]) === ERR_NOT_IN_RANGE) {
             this.moveTo(extensions[0])
         }
     }
     // Build everything else if there are no extensions to build
     else {
-        var site = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+        let site = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
 
         // If there is one, build it
         if (site !== null) {
@@ -67,32 +67,34 @@ Creep.prototype.Construct = function() {
 Creep.selector = 0
 
 Creep.prototype.Harvest = function() {
-    var sources = this.room.find(FIND_SOURCES);
+    const sources = this.room.find(FIND_SOURCES);
 
-    var nearbyEnergy = this.pos.findInRange(
+    let nearbyEnergy = this.pos.findInRange(
         FIND_DROPPED_RESOURCES,
         1,
-    {filter: (r) => r.resourceType == RESOURCE_ENERGY});
+    {filter: (r) => r.resourceType === RESOURCE_ENERGY});
 
     if (nearbyEnergy.length > 0) {
         this.pickup(nearbyEnergy[0])
     }
     else if (this.memory.target == null){
-        if (sources.length == 1) {
+        if (sources.length === 1) {
             this.memory.target = 0
         }
         else {
-            var localMin = 100000
-            var index = 0
+            let localMin = 100000
+            let index = 0
 
-            for (var i = 0; i < this.room.sourceSpace.length; i++) {
+            let i;
+            for (i = 0; i < this.room.sourceSpace.length; i++) {
 
                 if (this.room.sourceTrack[i] < this.room.sourceSpace[i]) {
                     this.memory.target = i
                     break;
                 }
 
-                var quotient = this.room.sourceTrack[i] / this.room.sourceSpace[i]
+                // TODO: Improve this code to make it clear what it accomplishes
+                let quotient = this.room.sourceTrack[i] / this.room.sourceSpace[i]
                 if (quotient < localMin) {
                     localMin = quotient
                     index = i
@@ -105,7 +107,7 @@ Creep.prototype.Harvest = function() {
         }
     }
 
-    if(this.memory.target != null && this.harvest(sources[this.memory.target]) == ERR_NOT_IN_RANGE) {
+    if(this.memory.target != null && this.harvest(sources[this.memory.target]) === ERR_NOT_IN_RANGE) {
         this.moveTo(sources[this.memory.target]);
     }
 };
@@ -122,13 +124,13 @@ Creep.prototype.Repair = function() {
     // Find nearest structure needing repair
     let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
         { filter: (s) => s.hits < s.hitsMax &&
-                        s.structureType != STRUCTURE_WALL &&
-                        s.structureType != STRUCTURE_RAMPART
+                        s.structureType !== STRUCTURE_WALL &&
+                        s.structureType !== STRUCTURE_RAMPART
     });
 
     // If there is one, repair it
-    if (structure != undefined) {
-        if (this.repair(structure) == ERR_NOT_IN_RANGE) {
+    if (structure !== undefined) {
+        if (this.repair(structure) === ERR_NOT_IN_RANGE) {
             this.moveTo(structure);
         }
     }
@@ -148,16 +150,16 @@ Creep.prototype.StoreEnergy = function() {
 
     // Get possible energy transfer targets
     var structure = this.pos.findClosestByPath(FIND_STRUCTURES, { filter: (structure) => {
-            return ((structure.structureType == STRUCTURE_SPAWN ||
-                    structure.structureType == STRUCTURE_EXTENSION ||
-                    structure.structureType == STRUCTURE_TOWER) &&
+            return ((structure.structureType === STRUCTURE_SPAWN ||
+                    structure.structureType === STRUCTURE_EXTENSION ||
+                    structure.structureType === STRUCTURE_TOWER) &&
                     structure.energy < structure.energyCapacity)
         }
     });
 
-    if (structure != undefined) {
+    if (structure !== undefined) {
         // Spawn
-        if (this.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        if (this.transfer(structure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
             this.moveTo(structure)
         }
     }
@@ -169,7 +171,7 @@ Creep.prototype.StoreEnergy = function() {
 Creep.prototype.Travel = function() {
     var ret = this.moveTo(Game.rooms[this.memory.target_room].controller)
     // var ret = this.moveTo(Game.flags["RoomToClaim2"])
-    if (ret == ERR_INVALID_TARGET) {
+    if (ret === ERR_INVALID_TARGET) {
         util.logError("Invalid target on creep", this.name)
     }
 }
@@ -177,7 +179,7 @@ Creep.prototype.Travel = function() {
 Creep.prototype.Upgrade = function() {
     this.memory.deliver = true
 
-    if (this.upgradeController(Game.rooms[this.memory.target_room].controller) == ERR_NOT_IN_RANGE) {
+    if (this.upgradeController(Game.rooms[this.memory.target_room].controller) === ERR_NOT_IN_RANGE) {
         this.moveTo(Game.rooms[this.memory.target_room].controller);
     }
 };
@@ -188,13 +190,13 @@ Creep.prototype.WallRepair = function() {
     // Find nearest structure needing repair
     let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
         { filter: (s) => s.hits < conf.WALL_STRENGTH &&
-                        (s.structureType == STRUCTURE_WALL ||
-                        s.structureType == STRUCTURE_RAMPART)
+                        (s.structureType === STRUCTURE_WALL ||
+                        s.structureType === STRUCTURE_RAMPART)
     });
 
     // If there is one, repair it
-    if (structure != undefined) {
-        if (this.repair(structure) == ERR_NOT_IN_RANGE) {
+    if (structure !== undefined) {
+        if (this.repair(structure) === ERR_NOT_IN_RANGE) {
             this.moveTo(structure);
         }
     }

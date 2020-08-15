@@ -14,11 +14,9 @@ module.exports = {
     MAX_LEVEL_PLANNED: 5,
     RENEW: false,
     WALL_STRENGTH: 200000,
-    MY_ROOMS: ['E33N41', 'E36N41', 'E37N42', 'sim'],
+    MY_ROOMS: ['W15S58'],
     SOURCE_SPACE: {
-        E33N41: [4, 2],
-        E36N41: [3, 4],
-        E37N42: [1, 4],
+        W15S58: [4, 1],
         SIM: [3, 3, 4],
     },
 }

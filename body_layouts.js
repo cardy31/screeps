@@ -23,7 +23,7 @@ Available Energy Per Level
 8: 6300
 */
 
-var bodyConfigs = {
+let bodyConfigs = {
     attacker: {
         0: {attack: 2, move: 2},
         1: {attack: 2, move: 2},
@@ -114,11 +114,11 @@ var bodyConfigs = {
     },
 }
 
-var getBody = function(role, level) {
+let getBody = function(role, level) {
     return bodyConfigs[role][level]
 }
 
-var getRoles = function() {
+let getRoles = function() {
     return Object.keys(bodyConfigs)
 }
 

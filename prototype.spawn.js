@@ -1,15 +1,15 @@
 // var util = require('utility')
-var body_conf = require('body_layouts')
-var conf = require('config')
-var names = require('names')
-var util = require('utility')
+const body_conf = require('body_layouts')
+const conf = require('config')
+const names = require('names')
+const util = require('utility')
 
 StructureSpawn.prototype.spawnMyCreep = function(role, level, room_name) {
     console.log(this.name, "trying to make new level", level, role)
     const body = buildBody(role, level)
-    var memory = getMemory(role, room_name)
+    let memory = getMemory(role, room_name)
     const name = getRandomName(roleToName(role) + ' ' + level)
-    ret = this.spawnCreep(body, name, memory)
+    let ret = this.spawnCreep(body, name, memory)
     console.log("Response:", util.responseToString(ret))
     return ret
 }
@@ -38,7 +38,7 @@ function buildBody(role, level) {
     let bodyConfig = body_conf.getBody(role, level)
     let build = []
 
-    for (var key in bodyConfig) {
+    for (const key in bodyConfig) {
         for (let i = 0; i < bodyConfig[key]; i++) {
             build.push(key)
         }
@@ -46,10 +46,10 @@ function buildBody(role, level) {
     return build
 }
 
-var getRandomName = function(prefix){
-    var name, isNameTaken, tries = 0;
+let getRandomName = function(prefix){
+    let name, isNameTaken, tries = 0;
     do {
-        var nameArray = Math.random() > .5 ? names.names1 : names.names2;
+        let nameArray = Math.random() > .5 ? names.names1 : names.names2;
         name = nameArray[Math.floor(Math.random() * nameArray.length)];
 
         if (tries > 3){
@@ -63,6 +63,6 @@ var getRandomName = function(prefix){
     return prefix+" "+name;
 };
 
-var getMemory = function(role, room_name) {
+let getMemory = function(role, room_name) {
     return {memory:{role: role, deliver: true, target: null, target_room: room_name}}
 }

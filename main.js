@@ -1,31 +1,28 @@
-// require('require')
-var conf = require('config')
-var body_conf = require('body_layouts')
-var towerControl = require('tower.control')
+const conf = require('config')
+const towerControl = require('tower.control')
 
-var util = require('utility')
-var roleAttacker = require('role.attacker')
-var roleBuilder = require('role.builder')
-var roleClaimer = require('role.claimer')
-var roleHarvester = require('role.harvester')
-var roleUpgrader = require('role.upgrader')
-var roleRepairer = require('role.repairer')
-var roleRenew = require('role.renew')
-var roleWallRepairer = require('role.wallRepairer')
+const util = require('utility')
+const roleAttacker = require('role.attacker')
+const roleBuilder = require('role.builder')
+const roleClaimer = require('role.claimer')
+const roleHarvester = require('role.harvester')
+const roleUpgrader = require('role.upgrader')
+const roleRepairer = require('role.repairer')
+const roleRenew = require('role.renew')
+const roleWallRepairer = require('role.wallRepairer')
 util.clearOldMemory()
 
 module.exports.loop = function () {
-    var ret = util.census()
-    var creepsCountByRoom = ret[0]
-    var creepsByRoom = ret[1]
-    var sourceTrack = ret[2]
-    var allCreeps = Game.creeps
-    var allRooms = Game.rooms
+    const ret = util.census()
+    const creepsCountByRoom = ret[0]
+    const creepsByRoom = ret[1]
+    const sourceTrack = ret[2]
+    const allCreeps = Game.creeps
 
-    for (var key in Object.keys(conf.MY_ROOMS)) {
-        var room = Game.rooms[conf.MY_ROOMS[key]]
+    for (let key in Object.keys(conf.MY_ROOMS)) {
+        const room = Game.rooms[conf.MY_ROOMS[key]]
 
-        if (room == undefined) {
+        if (room === undefined) {
             continue;
         }
 
@@ -41,18 +38,18 @@ module.exports.loop = function () {
             util.getCorrectSpawn(room.name).spawnMyCreep('harvester', 1, room.name)
         }
 
-        var current_level = util.getLevel(room.name)
-        var energyAvail = room.energyAvailable
-        var creepCount = creepsCountByRoom[room.name]
+        const current_level = util.getLevel(room.name)
+        const energyAvail = room.energyAvailable
+        let creepCount = creepsCountByRoom[room.name]
 
-        if (creepCount == undefined) {
+        if (creepCount === undefined) {
             creepCount = util.getEmptyCreepCount()
         }
 
         console.log(room.name + ":", JSON.stringify(creepCount), "level:", current_level)
 
         // Spawn any new creeps needed
-        if (energyAvail >= conf.TARG_ENERGY[current_level] || room.name == 'E37N42') {
+        if (energyAvail >= conf.TARG_ENERGY[current_level]) {
             if (creepCount['claimer'] < conf.TARG_CLAIMERS[current_level]) {
                 util.getCorrectSpawn(room.name).spawnMyCreep('claimer', current_level, room.name)
             }
@@ -77,12 +74,12 @@ module.exports.loop = function () {
         }
 
         // Run various creep programs
-        var creepsForRoom = creepsByRoom[room.name]
-        if (creepsForRoom == undefined) {
+        let creepsForRoom = creepsByRoom[room.name]
+        if (creepsForRoom === undefined) {
             creepsForRoom = util.getEmptyCreepCount()
         }
-        for (var i = 0; i < creepsForRoom.length; i++) {
-            var creep = allCreeps[creepsForRoom[i]]
+        for (let i = 0; i < creepsForRoom.length; i++) {
+            let creep = allCreeps[creepsForRoom[i]]
 
             // Renew old creeps that are still at the correct level
             if (conf.RENEW && ((creep.memory.renew ||
