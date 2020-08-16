@@ -26,43 +26,27 @@ Creep.prototype.Claim = function() {
 }
 
 Creep.prototype.CollectEnergy = function() {
-    const sources = this.room.find(FIND_SOURCES);
+    const containers = util.getContainers(this.room.name)
 
     const nearbyEnergy = findNearbyEnergy(this)
-
     if (nearbyEnergy.length > 0) {
         this.pickup(nearbyEnergy[0])
-    }
-    else if (this.memory.target == null){
-        if (sources.length === 1) {
-            this.memory.target = 0
+    } else if (this.memory.containerTarget == null){
+        if (containers.length === 1) {
+            this.memory.containerTarget = 0
         } else {
-            let valueOfLeastCongestedEnergySource = 100000
-            let index = 0
-
-            // TODO: Change this to track congestion on containers
-            for (let i = 0; i < this.room.energySourceAvailableSpace.length; i++) {
-                if (this.room.creepsAssignedToEnergySource[i] < this.room.energySourceAvailableSpace[i]) {
-                    this.memory.target = i
-                    this.room.creepsAssignedToEnergySource[i]++
-                    break;
-                }
-
-                let energySourceCongestion = this.room.creepsAssignedToEnergySource[i] / this.room.energySourceAvailableSpace[i]
-                if (energySourceCongestion < valueOfLeastCongestedEnergySource) {
-                    valueOfLeastCongestedEnergySource = energySourceCongestion
-                    index = i
-                }
-            }
-            if (this.memory.target == null) {
-                this.memory.target = index
-                this.room.creepsAssignedToEnergySource[index]++
-            }
+            this.memory.containerTarget = Math.floor((Math.random() * 2))
         }
     }
 
-    if(this.memory.target != null && this.harvest(sources[this.memory.target]) === ERR_NOT_IN_RANGE) {
-        this.moveTo(sources[this.memory.target]);
+    // Withdraw energy
+    if(this.memory.containerTarget != null && this.withdraw(containers[this.memory.containerTarget], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+        this.moveTo(containers[this.memory.containerTarget]);
+    }
+    else {
+        // TODO: Fix this hack later
+        this.memory.containerTarget += 1
+        this.memory.containerTarget %= 2
     }
 }
 
@@ -109,21 +93,71 @@ Creep.prototype.DeliveryIsFinished = function() {
     return this.store[RESOURCE_ENERGY] === 0 && this.memory.deliver
 }
 
-Creep.prototype.Mine = function() {
-    if (this.ticksToLive === 1 && this.memory.mining_target != null) {
-        this.room.creepsAssignedToEnergySource[this.memory.mining_target]--
-    } else {
-        const sources = this.room.find(FIND_SOURCES);
+Creep.prototype.HarvestEnergy = function() {
+    const sources = this.room.find(FIND_SOURCES);
 
+    const nearbyEnergy = findNearbyEnergy(this)
+    if (nearbyEnergy.length > 0) {
+        this.pickup(nearbyEnergy[0])
+    }
+    else if (this.memory.target == null){
         if (sources.length === 1) {
             this.memory.target = 0
-        } else if (this.memory.mining_target == null) {
+        } else {
+            let valueOfLeastCongestedEnergySource = 100000
+            let index = 0
+
             for (let i = 0; i < this.room.energySourceAvailableSpace.length; i++) {
                 if (this.room.creepsAssignedToEnergySource[i] < this.room.energySourceAvailableSpace[i]) {
-                    this.memory.mining_target = i
+                    this.memory.target = i
+                    this.room.creepsAssignedToEnergySource[i]++
+                    break;
+                }
+
+                let energySourceCongestion = this.room.creepsAssignedToEnergySource[i] / this.room.energySourceAvailableSpace[i]
+                if (energySourceCongestion < valueOfLeastCongestedEnergySource) {
+                    valueOfLeastCongestedEnergySource = energySourceCongestion
+                    index = i
+                }
+            }
+            if (this.memory.target == null) {
+                this.memory.target = index
+                this.room.creepsAssignedToEnergySource[index]++
+            }
+        }
+    }
+
+    if(this.memory.target != null && this.harvest(sources[this.memory.target]) === ERR_NOT_IN_RANGE) {
+        this.moveTo(sources[this.memory.target]);
+    }
+}
+
+Creep.prototype.Mine = function() {
+    const containers = util.getContainers(this.room.name)
+    if (this.ticksToLive === 1 && this.memory.minerContainerTarget != null) {
+        this.room.creepsAssignedToEnergySource[this.memory.minerContainerTarget]--
+    } else {
+        if (containers.length === 1) {
+            this.memory.minerContainerTarget = 0
+        } else if (this.memory.minerContainerTarget == null) {
+            for (let i = 0; i < this.room.energySourceAvailableSpace.length; i++) {
+                if (this.room.creepsAssignedToEnergySource[i] < this.room.energySourceAvailableSpace[i]) {
+                    this.memory.minerContainerTarget = i
                     this.room.creepsAssignedToEnergySource[i]++
                 }
             }
+        }
+    }
+    if (this.memory.minerContainerTarget != null) {
+        const container = containers[this.memory.minerContainerTarget]
+        if (this.pos.x !== container.pos.x || this.pos.y !== container.pos.y) {
+            this.moveTo(container)
+        }
+        else {
+            if (this.memory.source_id == null) {
+                this.memory.source_id = this.pos.findClosestByPath(FIND_SOURCES).id
+            }
+            this.harvest(Game.getObjectById(this.memory.source_id))
         }
     }
 }
@@ -188,6 +222,10 @@ Creep.prototype.ResetMemoryFlags = function() {
 
 Creep.prototype.ShouldCollectEnergy = function() {
     return this.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && this.memory.deliver === false
+}
+
+Creep.prototype.ShouldHarvestEnergy = function() {
+    return util.getContainers(this.room.name).length < this.room.find(FIND_SOURCES).length
 }
 
 Creep.prototype.ShouldMoveToDifferentRoom = function() {
@@ -265,6 +303,8 @@ Creep.prototype.Work = function(jobToPerform, context) {
 
     if (this.ShouldMoveToDifferentRoom()) {
         this.Travel()
+    } else if (this.ShouldHarvestEnergy()) {
+        this.HarvestEnergy()
     } else if (this.ShouldCollectEnergy()) {
         this.CollectEnergy()
     } else {

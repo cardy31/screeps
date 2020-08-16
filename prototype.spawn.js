@@ -20,6 +20,8 @@ function roleToName(role) {
             return 'Claimer'
         case 'harvester':
             return 'Harvester'
+        case 'miner':
+            return 'Miner'
         case 'repairer':
             return 'Repairer'
         case 'upgrader':
