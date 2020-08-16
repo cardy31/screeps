@@ -1,9 +1,9 @@
 let roleMiner = {
     run: function(creep) {
-        if (this.ShouldMoveToDifferentRoom()) {
-            this.Travel()
+        if (creep.ShouldMoveToDifferentRoom()) {
+            creep.Travel()
         } else {
-            this.Mine()
+            creep.Mine()
         }
     }
 };

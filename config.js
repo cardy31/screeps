@@ -22,6 +22,9 @@ module.exports = {
         'wallRepairer':    [0, 1, 1, 3, 2, 2, 2, 1, 1],
     },
     MAX_LEVEL_PLANNED: 5,
+    MINERS_TO_SPAWN: {
+        'W15S58': 2,
+    },
     MY_ROOMS: ['W15S58'],
     RENEW: false,
     ROLES_IN_PRIORITY_ORDER: ['claimer', 'harvester', 'upgrader', 'builder', 'repairer', 'rampartRepairer', 'wallRepairer', 'attacker'],
