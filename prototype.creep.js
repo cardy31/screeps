@@ -9,7 +9,7 @@ Creep.prototype.Attack = function() {
 }
 
 Creep.prototype.Claim = function() {
-    const flag = Game.flags["RoomToClaim2"]
+    const flag = Game.flags["Flag1"]
     const room = flag.room
     if (room == null) {
         this.moveTo(flag)
@@ -134,17 +134,13 @@ Creep.prototype.HarvestEnergy = function() {
 
 Creep.prototype.Mine = function() {
     const containers = util.getContainers(this.room.name)
-    if (this.ticksToLive === 1 && this.memory.minerContainerTarget != null) {
-        this.room.creepsAssignedToEnergySource[this.memory.minerContainerTarget]--
-    } else {
-        if (containers.length === 1) {
-            this.memory.minerContainerTarget = 0
-        } else if (this.memory.minerContainerTarget == null) {
-            for (let i = 0; i < this.room.energySourceAvailableSpace.length; i++) {
-                if (this.room.creepsAssignedToEnergySource[i] < this.room.energySourceAvailableSpace[i]) {
-                    this.memory.minerContainerTarget = i
-                    this.room.creepsAssignedToEnergySource[i]++
-                }
+    if (containers.length === 1) {
+        this.memory.minerContainerTarget = 0
+    } else if (this.memory.minerContainerTarget == null) {
+        for (let i = 0; i < this.room.energySourceAvailableSpace.length; i++) {
+            if (this.room.creepsAssignedToEnergySource[i] < this.room.energySourceAvailableSpace[i]) {
+                this.memory.minerContainerTarget = i
+                this.room.creepsAssignedToEnergySource[i]++
             }
         }
     }
@@ -225,7 +221,10 @@ Creep.prototype.ShouldCollectEnergy = function() {
 }
 
 Creep.prototype.ShouldHarvestEnergy = function() {
-    return util.getContainers(this.room.name).length < this.room.find(FIND_SOURCES).length
+    if (Memory.harvest == null) {
+        Memory.harvest = util.getContainers(this.room.name).length < this.room.find(FIND_SOURCES).length
+    }
+    return Memory.harvest
 }
 
 Creep.prototype.ShouldMoveToDifferentRoom = function() {

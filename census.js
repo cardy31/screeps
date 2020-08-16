@@ -1,4 +1,5 @@
 const body_conf = require('body_layouts')
+const util = require('utility')
 
 class Census {
     constructor() {
@@ -13,7 +14,8 @@ class Census {
     performCensus() {
         for (const key of Object.keys(this.myCreeps)) {
             let creep = this.myCreeps[key]
-            if (creep.memory.target_room in this.creepsByRoom && creep.memory.target_room in this.creepNamesByRoom) {
+
+            if (this._roomHasBeenSeenBefore(creep.memory.target_room)) {
                 this.creepsByRoom[creep.memory.target_room][creep.memory.role] += 1
                 this.creepNamesByRoom[creep.memory.target_room].push(creep.name)
             }
@@ -24,19 +26,33 @@ class Census {
                 this.creepNamesByRoom[creep.memory.target_room].push(creep.name)
             }
 
-            // TODO This can be made more efficient by only counting miners once those exist
-            if (!(creep.memory.target_room in this.creepsAssignedToEnergySource)) {
-                this.creepsAssignedToEnergySource[creep.memory.target_room] = []
+            if (this._creepShouldGetCounted(creep)) {
+                if (!(creep.memory.target_room in this.creepsAssignedToEnergySource)) {
+                    this.creepsAssignedToEnergySource[creep.memory.target_room] = []
 
-                let targ_length = Game.rooms[creep.memory.target_room].find(FIND_SOURCES).length
-                for (let i = 0; i < targ_length; i++) {
-                    this.creepsAssignedToEnergySource[creep.memory.target_room].push(0)
+                    let targ_length = Game.rooms[creep.memory.target_room].find(FIND_SOURCES).length
+                    for (let i = 0; i < targ_length; i++) {
+                        this.creepsAssignedToEnergySource[creep.memory.target_room].push(0)
+                    }
+                }
+                if ((creep.memory.target != null && creep.memory.deliver === false) || creep.memory.role === 'miner') {
+                    if (creep.memory.target != null) {
+                        this.creepsAssignedToEnergySource[creep.memory.target_room][creep.memory.target]++
+                    }
+                    else if (creep.memory.minerContainerTarget != null) {
+                        this.creepsAssignedToEnergySource[creep.memory.target_room][creep.memory.minerContainerTarget]++
+                    }
                 }
             }
-            if (creep.memory.target != null && creep.memory.deliver === false) {
-                this.creepsAssignedToEnergySource[creep.memory.target_room][creep.memory.target]++
-            }
         }
+    }
+
+    _creepShouldGetCounted(creep) {
+        return creep.ShouldHarvestEnergy() || creep.memory.role === 'miner'
+    }
+
+    _roomHasBeenSeenBefore(roomName) {
+        return this.seenBefore = roomName in this.creepsByRoom && roomName in this.creepNamesByRoom
     }
 
     getEmptyCreepCount() {
@@ -52,7 +68,7 @@ class Census {
         if (roomName in this.creepsByRoom) {
             return this.creepsByRoom[roomName]
         } else {
-            throw new RoomError()
+            throw new RoomError(roomName)
         }
     }
 
@@ -60,7 +76,7 @@ class Census {
         if (roomName in this.creepNamesByRoom) {
             return this.creepNamesByRoom[roomName]
         } else {
-            throw new RoomError()
+            throw new RoomError(roomName)
         }
     }
 
@@ -68,13 +84,13 @@ class Census {
         if (roomName in this.creepsAssignedToEnergySource) {
             return this.creepsAssignedToEnergySource[roomName]
         } else {
-            throw new RoomError()
+            throw new RoomError(roomName)
         }
     }
 }
 
-function RoomError(message = "Given room was invalid!") {
-    return new Error(message);
+function RoomError(roomName) {
+    return new Error("Given room was invalid: " + roomName);
 }
 
 module.exports = Census

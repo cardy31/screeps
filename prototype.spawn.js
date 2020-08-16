@@ -5,11 +5,11 @@ const util = require('utility')
 StructureSpawn.prototype.spawnMyCreep = function(role, level, room_name) {
     console.log(this.name, "trying to make new level", level, role)
     const body = buildBody(role, level)
-    let memory = getMemory(role, room_name)
+    const memory = getMemory(role, room_name)
     const name = getRandomName(roleToName(role) + ' ' + level)
-    let ret = this.spawnCreep(body, name, memory)
-    console.log("Response:", util.responseToString(ret))
-    return ret
+    const spawnReturnValue = this.spawnCreep(body, name, memory)
+    console.log("Response:", util.responseToString(spawnReturnValue))
+    return spawnReturnValue
 }
 
 function roleToName(role) {

@@ -19,6 +19,7 @@ util.clearOldMemory()
 module.exports.loop = function () {
     const census = new Census()
     const allCreeps = Game.creeps
+    Memory.harvest = null
 
     for (let key in Object.keys(conf.MY_ROOMS)) {
         const room = Game.rooms[conf.MY_ROOMS[key]]
@@ -115,7 +116,6 @@ let creepShouldBeRenewed = function(creep, current_level, energyAvailable) {
 }
 
 let runCreepRole = function(creep) {
-    // TODO: Add miners on top of containers https://www.reddit.com/r/screeps/comments/4x8z65/whats_the_best_strategy_for_gathering_energy/
     switch(creep.memory.role) {
         case 'attacker':
             roleAttacker.run(creep);
