@@ -1,4 +1,5 @@
 require('require')
+const Census = require('census')
 const conf = require('config')
 const roleAttacker = require('role.attacker')
 const roleBuilder = require('role.builder')
@@ -16,8 +17,9 @@ const util = require('utility')
 util.clearOldMemory()
 
 module.exports.loop = function () {
-    const [creepsCountByRoom, creepsByRoom, creepsAssignedToEnergySource] = util.census()
+    const census = new Census()
     const allCreeps = Game.creeps
+    Memory.harvest = null
 
     for (let key in Object.keys(conf.MY_ROOMS)) {
         const room = Game.rooms[conf.MY_ROOMS[key]]
@@ -30,15 +32,15 @@ module.exports.loop = function () {
         }
 
         room.energySourceAvailableSpace = conf.SOURCE_AVAILABLE_SPACE[room.name] // the room that each source has for creeps
-        room.creepsAssignedToEnergySource = creepsAssignedToEnergySource[room.name] // the counted number of creeps assigned to each source
+        room.creepsAssignedToEnergySource = census.getCreepsAssignedToEnergySource(room.name) // the counted number of creeps assigned to each source
         towerControl.runTowers(room.name)
 
         const currentLevel = util.getLevel(room.name)
         const energyAvailable = room.energyAvailable
-        let creepCount = creepsCountByRoom[room.name]
+        let creepCount = census.getCreepsByRoom(room.name)
 
         if (creepCount == null) {
-            creepCount = util.getEmptyCreepCount()
+            creepCount = census.getEmptyCreepCount()
         }
 
         logRoomStatus(room, creepCount, currentLevel)
@@ -47,7 +49,7 @@ module.exports.loop = function () {
             spawnCreeps(creepCount, currentLevel, room.name)
         }
 
-        let creepsForRoom = creepsByRoom[room.name]
+        let creepsForRoom = census.getCreepNamesByRoom(room.name)
         if (creepsForRoom == null) {
             creepsForRoom = util.getEmptyCreepCount()
         }
@@ -114,7 +116,6 @@ let creepShouldBeRenewed = function(creep, current_level, energyAvailable) {
 }
 
 let runCreepRole = function(creep) {
-    // TODO: Add miners on top of containers https://www.reddit.com/r/screeps/comments/4x8z65/whats_the_best_strategy_for_gathering_energy/
     switch(creep.memory.role) {
         case 'attacker':
             roleAttacker.run(creep);

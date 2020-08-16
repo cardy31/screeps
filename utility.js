@@ -12,49 +12,6 @@ let bodyRenewValid = function(creep, current_level) {
     return (creep_body.toString() === bodyInfoGood.toString())
 }
 
-let census = function() {
-    const myCreeps = Game.creeps
-    let creepsByRoom = {}
-    let creepNamesByRoom = {}
-    let creepsAssignedToEnergySource = {}
-    // Count creeps in each controlled room
-    for (const key of Object.keys(myCreeps)) {
-        let creep = myCreeps[key]
-        if (creep.memory.target_room != null) {
-            if (creep.memory.target_room in creepsByRoom) {
-                creepsByRoom[creep.memory.target_room][creep.memory.role] += 1
-            }
-            else {
-                creepsByRoom[creep.memory.target_room] = getEmptyCreepCount()
-                creepsByRoom[creep.memory.target_room][creep.memory.role] = 1
-            }
-        }
-
-        // Counting creeps by room
-        if (creep.memory.target_room in creepNamesByRoom) {
-            creepNamesByRoom[creep.memory.target_room].push(creep.name)
-        }
-        else {
-            creepNamesByRoom[creep.memory.target_room] = []
-            creepNamesByRoom[creep.memory.target_room].push(creep.name)
-        }
-
-        // Count creeps at each source by room
-        if (!(creep.memory.target_room in creepsAssignedToEnergySource)) {
-            creepsAssignedToEnergySource[creep.memory.target_room] = []
-
-            let targ_length = Game.rooms[creep.memory.target_room].find(FIND_SOURCES).length
-            for (let i = 0; i < targ_length; i++) {
-                creepsAssignedToEnergySource[creep.memory.target_room].push(0)
-            }
-        }
-        if (creep.memory.target != null && creep.memory.deliver === false) {
-            creepsAssignedToEnergySource[creep.memory.target_room][creep.memory.target]++
-        }
-    }
-    return [creepsByRoom, creepNamesByRoom, creepsAssignedToEnergySource]
-}
-
 let clearOldMemory = function() {
     for (let creep in Memory.creeps) {
         if(!Game.creeps[creep]) {
@@ -77,29 +34,6 @@ let getCorrectSpawn = function(room_name) {
     else {
         return spawns[0]
     }
-}
-
-let getCreepsByRoom = function() {
-    let allCreeps = Game.creeps
-    let creepDict = {}
-
-    for (const key of Object.keys(allCreeps)) {
-        const creepRoom = allCreeps[key].memory.target_room
-        if (!(creepRoom in creepDict)) {
-            creepDict[creepRoom] = []
-        }
-        creepDict[creepRoom].push(allCreeps[key].name)
-    }
-    return creepDict
-}
-
-let getEmptyCreepCount = function() {
-    let creepCount = {}
-    let roles = body_conf.getRoles()
-    for (let i = 0; i < roles.length; i++) {
-        creepCount[roles[i]] = 0
-    }
-    return creepCount
 }
 
 let getExtensions = function(roomName) {
@@ -172,12 +106,9 @@ let responseToString = function(responseCode) {
 
 module.exports = {
     bodyRenewValid: bodyRenewValid,
-    census: census,
     clearOldMemory: clearOldMemory,
     getContainers: getContainers,
     getCorrectSpawn: getCorrectSpawn,
-    getCreepsByRoom: getCreepsByRoom,
-    getEmptyCreepCount: getEmptyCreepCount,
     getExtensions: getExtensions,
     getLevel: getLevel,
     getMainRoom: getMainRoom,
