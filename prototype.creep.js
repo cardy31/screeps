@@ -6,6 +6,9 @@ Creep.prototype.Attack = function() {
     if (hostiles != null && this.attack(hostiles[0]) === ERR_NOT_IN_RANGE) {
         this.moveTo(hostiles[0])
     }
+    else {
+        this.moveTo(Game.rooms[this.memory.target_room].controller)
+    }
 }
 
 Creep.prototype.Claim = function() {
@@ -56,7 +59,8 @@ Creep.prototype.Construct = function() {
     // Prioritize building extensions
     let extensions = this.room.find(FIND_CONSTRUCTION_SITES, {filter: (s) =>
     s.structureType === STRUCTURE_EXTENSION ||
-    s.structureType === STRUCTURE_WALL});
+    s.structureType === STRUCTURE_WALL ||
+    s.structureType === STRUCTURE_SPAWN});
 
     if (extensions.length !== 0) {
         if (this.build(extensions[0]) === ERR_NOT_IN_RANGE) {
@@ -103,9 +107,15 @@ Creep.prototype.HarvestEnergy = function() {
     else if (this.memory.target == null){
         if (sources.length === 1) {
             this.memory.target = 0
+        // } else if (sources.length > 1 && roomHasNoSpawns(this.room)) {
+        //     this.memory.target = Math.floor((Math.random() * 2))
         } else {
             let valueOfLeastCongestedEnergySource = 100000
             let index = 0
+
+            if (this.room.energySourceAvailableSpace == null) {
+                util.logError("Energy Source space has not been defined")
+            }
 
             for (let i = 0; i < this.room.energySourceAvailableSpace.length; i++) {
                 if (this.room.creepsAssignedToEnergySource[i] < this.room.energySourceAvailableSpace[i]) {
@@ -156,6 +166,10 @@ Creep.prototype.Mine = function() {
             this.harvest(Game.getObjectById(this.memory.source_id))
         }
     }
+}
+
+Creep.prototype.NeedsEnergy = function() {
+    return this.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && this.memory.deliver === false
 }
 
 Creep.prototype.Repair = function() {
@@ -216,15 +230,8 @@ Creep.prototype.ResetMemoryFlags = function() {
     this.memory.target = null
 };
 
-Creep.prototype.ShouldCollectEnergy = function() {
-    return this.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && this.memory.deliver === false
-}
-
 Creep.prototype.ShouldHarvestEnergy = function() {
-    if (Memory.harvest == null) {
-        Memory.harvest = util.getContainers(this.room.name).length < this.room.find(FIND_SOURCES).length
-    }
-    return Memory.harvest
+    return util.getContainers(this.room.name).length < this.room.find(FIND_SOURCES).length
 }
 
 Creep.prototype.ShouldMoveToDifferentRoom = function() {
@@ -232,7 +239,7 @@ Creep.prototype.ShouldMoveToDifferentRoom = function() {
 }
 
 Creep.prototype.StartDelivery = function() {
-    if (this.memory.deliver === false) {
+    if (this.memory.deliver === false || this.memory.deliver == null) {
         this.memory.deliver = true
         this.room.creepsAssignedToEnergySource[this.memory.target] -= 1
     }
@@ -302,12 +309,18 @@ Creep.prototype.Work = function(jobToPerform, context) {
 
     if (this.ShouldMoveToDifferentRoom()) {
         this.Travel()
-    } else if (this.ShouldHarvestEnergy()) {
+    } else if (this.ShouldHarvestEnergy() && this.NeedsEnergy()) {
         this.HarvestEnergy()
-    } else if (this.ShouldCollectEnergy()) {
+    } else if (this.NeedsEnergy()) {
         this.CollectEnergy()
     } else {
-        jobToPerform.apply(context)
+        // If a creep is in a room where no spawn is built yet
+        if (this.room.find(FIND_MY_SPAWNS).length === 0) {
+            this.Construct()
+        }
+        else {
+            jobToPerform.apply(context)
+        }
     }
 }
 
@@ -316,4 +329,8 @@ let findNearbyEnergy = function(creep) {
         FIND_DROPPED_RESOURCES,
         1,
         {filter: (r) => r.resourceType === RESOURCE_ENERGY});
+}
+
+let roomHasNoSpawns = function(room) {
+    return room.find(FIND_MY_SPAWNS).length === 0
 }

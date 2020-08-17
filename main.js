@@ -19,7 +19,6 @@ util.clearOldMemory()
 module.exports.loop = function () {
     const census = new Census()
     const allCreeps = Game.creeps
-    Memory.harvest = null
 
     for (let key in Object.keys(conf.MY_ROOMS)) {
         const room = Game.rooms[conf.MY_ROOMS[key]]
@@ -45,14 +44,14 @@ module.exports.loop = function () {
 
         logRoomStatus(room, creepCount, currentLevel)
 
-        if (shouldSpawnCreeps(energyAvailable, currentLevel)) {
+        if (shouldSpawnClaimer(currentLevel, census.totalClaimers)) {
+            spawnClaimer(room, currentLevel)
+            census.totalClaimers += 1
+        } else if (shouldSpawnCreeps(energyAvailable, currentLevel, room)) {
             spawnCreeps(creepCount, currentLevel, room.name)
         }
 
         let creepsForRoom = census.getCreepNamesByRoom(room.name)
-        if (creepsForRoom == null) {
-            creepsForRoom = util.getEmptyCreepCount()
-        }
         for (let i = 0; i < creepsForRoom.length; i++) {
             // TODO: This allCreeps step shouldn't be necessary
             let creep = allCreeps[creepsForRoom[i]]
@@ -64,6 +63,7 @@ module.exports.loop = function () {
             }
         }
     }
+    console.log()
 }
 
 let roomHasNoCreeps = function(room) {
@@ -82,10 +82,24 @@ let shouldSpawnCreeps = function(energyAvailable, currentLevel) {
     return energyAvailable >= conf.TARG_ENERGY[currentLevel]
 }
 
+let shouldSpawnClaimer = function(currentLevel, totalClaimers) {
+    return currentLevel >= 3 && Game.flags['Flag1'] != null && totalClaimers === 0
+}
+
+let spawnClaimer = function(room, currentLevel) {
+    const spawn = room.find(FIND_MY_SPAWNS)[0]
+    if (spawn != null) {
+        spawn.spawnMyCreep('claimer', currentLevel, room.name)
+    }
+}
+
 let spawnCreeps = function(creepCount, currentLevel, roomName) {
     const spawn = util.getCorrectSpawn(roomName)
     for (let i = 0; i < conf.ROLES_IN_PRIORITY_ORDER.length; i++) {
         let role = conf.ROLES_IN_PRIORITY_ORDER[i]
+        if (role === 'repairer' && getTowers(roomName).length > 0) {
+            continue
+        }
         if (creepCount[role] < conf.CREEP_TARGETS[role][currentLevel]) {
             spawn.spawnMyCreep(role, currentLevel, roomName)
             break;
@@ -93,9 +107,8 @@ let spawnCreeps = function(creepCount, currentLevel, roomName) {
     }
 }
 
-let shouldSpawnMiner = function(roomName, creepCount) {
-    const containers = util.getContainers(roomName)
-    return creepCount['miner'] < containers.length && creepCount['harvester'] >= 2
+let getTowers = function(roomName) {
+    return Game.rooms[roomName].find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}})
 }
 
 let renewCreep = function(creep) {

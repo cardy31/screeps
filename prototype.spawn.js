@@ -3,7 +3,7 @@ const names = require('names')
 const util = require('utility')
 
 StructureSpawn.prototype.spawnMyCreep = function(role, level, room_name) {
-    console.log(this.name, "trying to make new level", level, role)
+    console.log(this.name, "trying to make new level", level, role, "for room", room_name)
     const body = buildBody(role, level)
     const memory = getMemory(role, room_name)
     const name = getRandomName(roleToName(role) + ' ' + level)
@@ -60,7 +60,7 @@ let getRandomName = function(prefix){
         isNameTaken = Game.creeps[name] != null;
     } while (isNameTaken);
 
-    return prefix+" "+name;
+    return prefix + " " + name;
 };
 
 let getMemory = function(role, room_name) {

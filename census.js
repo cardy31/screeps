@@ -7,6 +7,7 @@ class Census {
         this.creepsByRoom = {}
         this.creepNamesByRoom = {}
         this.creepsAssignedToEnergySource = {}
+        this.totalClaimers = 0
 
         this.performCensus()
     }
@@ -14,6 +15,10 @@ class Census {
     performCensus() {
         for (const key of Object.keys(this.myCreeps)) {
             let creep = this.myCreeps[key]
+
+            if (creep.memory.role === 'claimer') {
+                this.totalClaimers += 1
+            }
 
             if (this._roomHasBeenSeenBefore(creep.memory.target_room)) {
                 this.creepsByRoom[creep.memory.target_room][creep.memory.role] += 1
@@ -52,7 +57,7 @@ class Census {
     }
 
     _roomHasBeenSeenBefore(roomName) {
-        return this.seenBefore = roomName in this.creepsByRoom && roomName in this.creepNamesByRoom
+        return roomName in this.creepsByRoom && roomName in this.creepNamesByRoom
     }
 
     getEmptyCreepCount() {
@@ -65,32 +70,41 @@ class Census {
     }
 
     getCreepsByRoom(roomName) {
+        if (roomName == null) {
+            return this.creepsByRoom
+        }
         if (roomName in this.creepsByRoom) {
             return this.creepsByRoom[roomName]
         } else {
-            throw new RoomError(roomName)
+            return []
         }
     }
 
     getCreepNamesByRoom(roomName) {
+        if (roomName == null) {
+            return this.creepNamesByRoom
+        }
         if (roomName in this.creepNamesByRoom) {
             return this.creepNamesByRoom[roomName]
         } else {
-            throw new RoomError(roomName)
+            return []
         }
     }
 
     getCreepsAssignedToEnergySource(roomName) {
+        if (roomName == null) {
+            return this.creepsAssignedToEnergySource
+        }
         if (roomName in this.creepsAssignedToEnergySource) {
             return this.creepsAssignedToEnergySource[roomName]
         } else {
-            throw new RoomError(roomName)
+            let myArr = []
+            for (let i = 0; i < Game.rooms[roomName].find(FIND_SOURCES).length; i++) {
+                myArr.push(0)
+            }
+            return myArr
         }
     }
-}
-
-function RoomError(roomName) {
-    return new Error("Given room was invalid: " + roomName);
 }
 
 module.exports = Census

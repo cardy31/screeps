@@ -48,6 +48,9 @@ let getLevel = function(roomName) {
             break;
         }
     }
+    if (Game.rooms[roomName].find(FIND_MY_SPAWNS).length === 0) {
+        level = 0
+    }
     return level
 }
 

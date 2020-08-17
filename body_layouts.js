@@ -39,8 +39,8 @@ let bodyConfigs = {
     builder: {
         0: {work: 1, carry: 1, move: 1},
         1: {work: 1, carry: 1, move: 2},
-        2: {work: 3, carry: 3, move: 2},
-        3: {work: 3, carry: 3, move: 2},
+        2: {work: 3, carry: 2, move: 3},
+        3: {work: 3, carry: 2, move: 3},
         4: {work: 5, carry: 6, move: 8},
         5: {work: 8, carry: 10, move: 10},
         6: {},
