@@ -9,7 +9,6 @@ const roleMiner = require('role.miner')
 const roleUpgrader = require('role.upgrader')
 const roleRampartRepairer = require('role.rampartRepairer')
 const roleRepairer = require('role.repairer')
-const roleRenew = require('role.renew')
 const roleWallRepairer = require('role.wallRepairer')
 const towerControl = require('tower.control')
 const util = require('utility')
@@ -55,12 +54,7 @@ module.exports.loop = function () {
         for (let i = 0; i < creepsForRoom.length; i++) {
             // TODO: This allCreeps step shouldn't be necessary
             let creep = allCreeps[creepsForRoom[i]]
-            if (creepShouldBeRenewed(creep, currentLevel, energyAvailable)) {
-                renewCreep(creep)
-            }
-            else {
-                runCreepRole(creep)
-            }
+            runCreepRole(creep)
         }
     }
     console.log()
@@ -109,23 +103,6 @@ let spawnCreeps = function(creepCount, currentLevel, roomName) {
 
 let getTowers = function(roomName) {
     return Game.rooms[roomName].find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}})
-}
-
-let renewCreep = function(creep) {
-    console.log("Renewing " + creep.name)
-
-    if (creep.ticksToLive < 1400) {
-        creep.memory.renew = true
-        roleRenew.run(creep)
-    }
-    else {
-        creep.memory.renew = false
-    }
-}
-
-let creepShouldBeRenewed = function(creep, current_level, energyAvailable) {
-    return conf.RENEW &&
-        ((creep.memory.renew || (creep.ticksToLive < 100 && util.bodyRenewValid(creep, current_level))) && energyAvailable >= 150)
 }
 
 let runCreepRole = function(creep) {
