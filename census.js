@@ -8,6 +8,7 @@ class Census {
         this.creepNamesByRoom = {}
         this.creepsAssignedToEnergySource = {}
         this.totalClaimers = 0
+        this.totalMiners = {}
 
         this.performCensus()
     }
@@ -18,6 +19,10 @@ class Census {
 
             if (creep.memory.role === 'claimer') {
                 this.totalClaimers += 1
+            }
+
+            if (creep.memory.role === 'miner') {
+                this.totalMiners[creep.memory.target_room] += 1
             }
 
             if (this._roomHasBeenSeenBefore(creep.memory.target_room)) {

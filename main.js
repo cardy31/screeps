@@ -47,6 +47,7 @@ module.exports.loop = function () {
             spawnClaimer(room, currentLevel)
             census.totalClaimers += 1
         } else if (shouldSpawnCreeps(energyAvailable, currentLevel, room)) {
+            // TODO: Should this entry condition allow for miners if the room has enough energy for a miner but not the other stuff?
             spawnCreeps(creepCount, currentLevel, room.name)
         }
 
