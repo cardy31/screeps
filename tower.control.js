@@ -21,11 +21,11 @@ let getNormalDamagedStructures = function(roomName) {
 }
 
 let getDamagedFortifications = function(roomName) {
-    const target_structures = [STRUCTURE_WALL, STRUCTURE_RAMPART]
     return Game.rooms[roomName].find(FIND_STRUCTURES,
         {
             filter: (s) => s.hits < s.hitsMax &&
-                s.structureType in target_structures
+                s.structureType === STRUCTURE_WALL ||
+                s.structureType === STRUCTURE_RAMPART
         })
 }
 

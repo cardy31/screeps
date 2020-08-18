@@ -56,8 +56,6 @@ Creep.prototype.Construct = function() {
     // Prioritize building extensions
     let extensions = this.room.find(FIND_CONSTRUCTION_SITES, {filter: (s) =>
     s.structureType === STRUCTURE_EXTENSION ||
-    s.structureType === STRUCTURE_WALL ||
-    s.structureType === STRUCTURE_RAMPART ||
     s.structureType === STRUCTURE_SPAWN});
 
     if (extensions.length !== 0) {
@@ -247,7 +245,9 @@ Creep.prototype.Work = function(jobToPerform, context) {
         this.CollectEnergy()
     } else {
         // If a creep is in a room where no spawn is built yet
-        if (this.room.find(FIND_MY_SPAWNS).length === 0) {
+        if (this.memory.role === 'upgrader' && this.room.controller.ticksToDowngrade < 3000) {
+            jobToPerform.apply(context)
+        } else if (this.room.find(FIND_MY_SPAWNS).length === 0) {
             this.Construct()
         }
         else {
