@@ -1,21 +1,32 @@
-let getTowers = function(room_name) {
-    return Game.rooms[room_name].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+const conf = require("./config");
+
+let getTowers = function(roomName) {
+    return Game.rooms[roomName].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
 }
 
-let getHostileCreeps = function(room_name) {
-    return Game.rooms[room_name].find(FIND_HOSTILE_CREEPS);
+let getHostileCreeps = function(roomName) {
+    return Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
 }
 
-let getInjuredCreeps = function(room_name) {
-    return Game.rooms[room_name].find(FIND_MY_CREEPS, {filter: (c) => c.hits < c.hitsMax});
+let getInjuredCreeps = function(roomName) {
+    return Game.rooms[roomName].find(FIND_MY_CREEPS, {filter: (c) => c.hits < c.hitsMax});
 }
 
-let getDamagedStructures = function(room_name) {
-    return Game.rooms[room_name].find(FIND_STRUCTURES,
+let getNormalDamagedStructures = function(roomName) {
+    return Game.rooms[roomName].find(FIND_STRUCTURES,
         { filter: (s) => s.hits < s.hitsMax &&
                         s.structureType !== STRUCTURE_WALL &&
                         s.structureType !== STRUCTURE_RAMPART
     });
+}
+
+let getDamagedFortifications = function(roomName) {
+    const target_structures = [STRUCTURE_WALL, STRUCTURE_RAMPART]
+    return Game.rooms[roomName].find(FIND_STRUCTURES,
+        {
+            filter: (s) => s.hits < s.hitsMax &&
+                s.structureType in target_structures
+        })
 }
 
 let towerAttack = function(room_name, towers, hostiles) {
@@ -26,28 +37,34 @@ let towerHeal = function(room_name, towers, injuredCreeps) {
     towers.forEach(tower => tower.heal(injuredCreeps[0]));
 }
 
-let towerRepair = function(room_name, towers, repairsNeeded) {
+let towerRepair = function(room_name, towers, normalRepairsNeeded, fortificationRepairsNeeded) {
     towers.forEach(tower => {
         if (tower.energy > tower.energyCapacity / 2) {
-            tower.repair(repairsNeeded[0]);
+            if (normalRepairsNeeded) {
+                tower.repair(normalRepairsNeeded[0])
+            } else if (fortificationRepairsNeeded) {
+                tower.repair(fortificationRepairsNeeded[0]);
+            }
         }
     });
 }
 
-let runTowers = function(room_name) {
-    const towers = getTowers(room_name)
+// TODO: Iterate over all towers in a room to react to changing state based on what prior towers did.
+let runTowers = function(roomName) {
+    const towers = getTowers(roomName)
     if (towers.length !== 0) {
-        const hostiles = getHostileCreeps(room_name)
-        const injuredCreeps = getInjuredCreeps(room_name)
-        const repairsNeeded = getDamagedStructures(room_name)
+        const hostiles = getHostileCreeps(roomName)
+        const injuredCreeps = getInjuredCreeps(roomName)
+        const normalRepairsNeeded = getNormalDamagedStructures(roomName)
+        const fortificationRepairs = getDamagedFortifications(roomName)
         if (hostiles.length > 0) {
-            towerAttack(room_name, towers, hostiles)
+            towerAttack(roomName, towers, hostiles)
         }
         else if (injuredCreeps.length > 0) {
-            towerHeal(room_name, towers, injuredCreeps)
+            towerHeal(roomName, towers, injuredCreeps)
         }
-        else if (repairsNeeded.length > 0) {
-            towerRepair(room_name, towers, repairsNeeded)
+        else if (normalRepairsNeeded || fortificationRepairs) {
+            towerRepair(roomName, towers, normalRepairsNeeded, fortificationRepairs)
         }
     }
 }

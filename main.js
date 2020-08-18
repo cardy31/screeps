@@ -7,9 +7,7 @@ const roleClaimer = require('role.claimer')
 const roleHarvester = require('role.harvester')
 const roleMiner = require('role.miner')
 const roleUpgrader = require('role.upgrader')
-const roleRampartRepairer = require('role.rampartRepairer')
 const roleRepairer = require('role.repairer')
-const roleWallRepairer = require('role.wallRepairer')
 const towerControl = require('tower.control')
 const util = require('utility')
 
@@ -44,10 +42,11 @@ module.exports.loop = function () {
         logRoomStatus(room, creepCount, currentLevel)
 
         if (shouldSpawnClaimer(currentLevel, census.totalClaimers)) {
-            spawnClaimer(room, currentLevel)
-            census.totalClaimers += 1
-        } else if (shouldSpawnCreeps(energyAvailable, currentLevel, room)) {
-            // TODO: Should this entry condition allow for miners if the room has enough energy for a miner but not the other stuff?
+            if (spawnClaimer(room, currentLevel) === OK) {
+                census.totalClaimers += 1
+            }
+        } else if (shouldSpawnCreeps(energyAvailable, currentLevel, room) ||
+            (shouldSpawnMiner(room.name, creepCount) && energyAvailable >= 700)) {
             spawnCreeps(creepCount, currentLevel, room.name)
         }
 
@@ -81,10 +80,15 @@ let shouldSpawnClaimer = function(currentLevel, totalClaimers) {
     return currentLevel >= 3 && Game.flags['Flag1'] != null && totalClaimers === 0
 }
 
-let spawnClaimer = function(room, currentLevel) {
+let shouldSpawnMiner = function(roomName, creepCount) {
+    const containers = util.getContainers(roomName)
+    return creepCount['miner'] < containers.length && creepCount['harvester'] > 0
+}
+
+let spawnClaimer = function(room, currentLevel, census) {
     const spawn = room.find(FIND_MY_SPAWNS)[0]
     if (spawn != null) {
-        spawn.spawnMyCreep('claimer', currentLevel, room.name)
+        return spawn.spawnMyCreep('claimer', currentLevel, room.name)
     }
 }
 
@@ -123,17 +127,11 @@ let runCreepRole = function(creep) {
         case 'miner':
             roleMiner.run(creep);
             break;
-        case 'rampartRepairer':
-            roleRampartRepairer.run(creep);
-            break;
         case 'repairer':
             roleRepairer.run(creep);
             break;
         case 'upgrader':
             roleUpgrader.run(creep);
-            break;
-        case 'wallRepairer':
-            roleWallRepairer.run(creep);
             break;
         default:
             util.logError(creep.name, "was not assigned a role")

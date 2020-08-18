@@ -18,11 +18,13 @@ Creep.prototype.Claim = function() {
         this.moveTo(flag)
     }
     else {
-        if (this.claimController(room.controller) === ERR_NOT_IN_RANGE) {
+        let response = this.claimController(room.controller)
+        if (response === ERR_NOT_IN_RANGE) {
             console.log(this.name + "Moving towards controller")
             this.moveTo(flag.room.controller)
-        }
-        else {
+        } else if (response === OK) {
+            this.suicide()
+        } else {
             util.logError("Claim is going poorly")
         }
     }
@@ -46,11 +48,6 @@ Creep.prototype.CollectEnergy = function() {
     if(this.memory.containerTarget != null && this.withdraw(containers[this.memory.containerTarget], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
         this.moveTo(containers[this.memory.containerTarget]);
     }
-    else {
-        // TODO: Fix this hack later
-        this.memory.containerTarget += 1
-        this.memory.containerTarget %= 2
-    }
 }
 
 Creep.prototype.Construct = function() {
@@ -60,6 +57,7 @@ Creep.prototype.Construct = function() {
     let extensions = this.room.find(FIND_CONSTRUCTION_SITES, {filter: (s) =>
     s.structureType === STRUCTURE_EXTENSION ||
     s.structureType === STRUCTURE_WALL ||
+    s.structureType === STRUCTURE_RAMPART ||
     s.structureType === STRUCTURE_SPAWN});
 
     if (extensions.length !== 0) {
@@ -72,23 +70,10 @@ Creep.prototype.Construct = function() {
         let site = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
 
         // If there is one, build it
-        if (site != null) {
-            if (this.build(site) === ERR_NOT_IN_RANGE) {
-                this.moveTo(site)
-            }
-        }
-        else {
-            if (this.room.energyAvailable < this.room.energyCapacityAvailable) {
-                this.StoreEnergy()
-            }
-            else {
-                if (this.memory.role === 'wallRepair') {
-                    this.Upgrade()
-                }
-                else {
-                    this.WallRepair()
-                }
-            }
+        if (site != null && this.build(site) === ERR_NOT_IN_RANGE) {
+            this.moveTo(site)
+        } else {
+            this.Upgrade()
         }
     }
 };
@@ -107,8 +92,6 @@ Creep.prototype.HarvestEnergy = function() {
     else if (this.memory.target == null){
         if (sources.length === 1) {
             this.memory.target = 0
-        // } else if (sources.length > 1 && roomHasNoSpawns(this.room)) {
-        //     this.memory.target = Math.floor((Math.random() * 2))
         } else {
             let valueOfLeastCongestedEnergySource = 100000
             let index = 0
@@ -194,37 +177,6 @@ Creep.prototype.Repair = function() {
     }
 }
 
-Creep.prototype.RepairRamparts = function() {
-    this.StartDelivery()
-
-    let ramparts = this.room.find(FIND_STRUCTURES, {
-        filter: (s) => s.structureType === STRUCTURE_RAMPART
-    });
-
-    let target = null
-
-    for (let percentage = 0.0000; percentage < 1; percentage += 0.01) {
-        for (let rampart of ramparts) {
-            if (rampart.hits / rampart.hitsMax < percentage) {
-                target = rampart
-                break
-            }
-        }
-
-        if (target != null) {
-            break
-        }
-    }
-    if (target != null) {
-        if (this.repair(target) === ERR_NOT_IN_RANGE) {
-            this.moveTo(target);
-        }
-    }
-    else {
-        this.WallRepair()
-    }
-}
-
 Creep.prototype.ResetMemoryFlags = function() {
     this.memory.deliver = false
     this.memory.target = null
@@ -281,26 +233,6 @@ Creep.prototype.Upgrade = function() {
         this.moveTo(Game.rooms[this.memory.target_room].controller);
     }
 };
-
-Creep.prototype.WallRepair = function() {
-    this.StartDelivery()
-
-    // Find nearest wall or rampart needing repair
-    let structure = this.pos.findClosestByPath(FIND_STRUCTURES,
-        { filter: (s) => s.hits < conf.WALL_STRENGTH &&
-                        (s.structureType === STRUCTURE_WALL ||
-                        s.structureType === STRUCTURE_RAMPART)
-    });
-
-    if (structure != null) {
-        if (this.repair(structure) === ERR_NOT_IN_RANGE) {
-            this.moveTo(structure);
-        }
-    }
-    else {
-        this.Upgrade()
-    }
-}
 
 Creep.prototype.Work = function(jobToPerform, context) {
     if (this.DeliveryIsFinished()) {
