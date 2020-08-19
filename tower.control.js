@@ -39,7 +39,7 @@ let towerHeal = function(room_name, towers, injuredCreeps) {
 
 let towerRepair = function(room_name, towers, normalRepairsNeeded, fortificationRepairsNeeded) {
     towers.forEach(tower => {
-        if (tower.energy > tower.energyCapacity / 2) {
+        if (tower.store.getFreeCapacity(RESOURCE_ENERGY) < tower.store.getUsedCapacity(RESOURCE_ENERGY)) {
             if (normalRepairsNeeded.length > 0) {
                 tower.repair(normalRepairsNeeded[0])
             } else if (fortificationRepairsNeeded.length > 0) {

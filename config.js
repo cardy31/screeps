@@ -16,9 +16,9 @@ module.exports = {
         'builder':         [1, 3, 3, 2, 1, 2, 1, 1, 1],
         'claimer':         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         'harvester':       [2, 2, 4, 2, 2, 2, 1, 1, 1],
-        'miner':           [0, 0, 2, 2, 2, 2, 1, 1, 1],
+        'miner':           [0, 0, 0, 0, 0, 0, 0, 0, 0], // Gated on number of containers a room has
         'repairer':        [0, 1, 1, 1, 0, 0, 0, 0, 0],
-        'upgrader':        [2, 4, 4, 3, 2, 2, 1, 1, 1],
+        'upgrader':        [2, 3, 3, 3, 2, 2, 1, 1, 1],
     },
     MAX_LEVEL_PLANNED: 5,
     MINERS_TO_SPAWN: {

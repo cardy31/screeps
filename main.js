@@ -94,14 +94,31 @@ let spawnClaimer = function(room, currentLevel, census) {
 
 let spawnCreeps = function(creepCount, currentLevel, roomName) {
     const spawn = util.getCorrectSpawn(roomName)
+    let roomFactor = 1
+    if (Game.rooms[roomName].find(FIND_SOURCES).length === 1) {
+        roomFactor = 0.5
+    }
     for (let i = 0; i < conf.ROLES_IN_PRIORITY_ORDER.length; i++) {
         let role = conf.ROLES_IN_PRIORITY_ORDER[i]
         if (role === 'repairer' && getTowers(roomName).length > 0) {
             continue
         }
-        if (creepCount[role] < conf.CREEP_TARGETS[role][currentLevel]) {
+        if (role === 'miner') {
+            if (creepCount['miner'] < util.getContainers(roomName).length) {
+                spawn.spawnMyCreep(role, currentLevel, roomName)
+                break
+            }
+            else {
+                continue
+            }
+        }
+        let creepTarget = 0
+        if (conf.CREEP_TARGETS[role][currentLevel] > 1) {
+            creepTarget = Math.ceil(conf.CREEP_TARGETS[role][currentLevel] * roomFactor)
+        }
+        if (creepCount[role] < creepTarget) {
             spawn.spawnMyCreep(role, currentLevel, roomName)
-            break;
+            break
         }
     }
 }

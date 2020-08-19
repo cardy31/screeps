@@ -40,7 +40,15 @@ Creep.prototype.CollectEnergy = function() {
         if (containers.length === 1) {
             this.memory.containerTarget = 0
         } else {
-            this.memory.containerTarget = Math.floor((Math.random() * 2))
+            let closestContainer = this.pos.findClosestByPath(FIND_STRUCTURES,
+          {
+                    filter: (s) => s.structureType === STRUCTURE_CONTAINER
+                });
+            if (containers[0] === closestContainer) {
+                this.memory.containerTarget = 0
+            } else {
+                this.memory.containerTarget = 1
+            }
         }
     }
 
@@ -65,7 +73,7 @@ Creep.prototype.Construct = function() {
     }
     // Build everything else if there are no extensions to build
     else {
-        let site = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+        let site = this.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
 
         // If there is one, build it
         if (site != null && this.build(site) === ERR_NOT_IN_RANGE) {
@@ -140,6 +148,9 @@ Creep.prototype.Mine = function() {
         if (this.pos.x !== container.pos.x || this.pos.y !== container.pos.y) {
             this.moveTo(container)
         }
+        else if (container.store.getFreeCapacity() === 0) {
+
+        }
         else {
             if (this.memory.source_id == null) {
                 this.memory.source_id = this.pos.findClosestByPath(FIND_SOURCES).id
@@ -178,6 +189,7 @@ Creep.prototype.Repair = function() {
 Creep.prototype.ResetMemoryFlags = function() {
     this.memory.deliver = false
     this.memory.target = null
+    this.memory.containerTarget = null
 };
 
 Creep.prototype.ShouldHarvestEnergy = function() {
@@ -202,8 +214,8 @@ Creep.prototype.StoreEnergy = function() {
     const structure = this.pos.findClosestByPath(FIND_STRUCTURES, { filter: (structure) => {
             return ((structure.structureType === STRUCTURE_SPAWN ||
                     structure.structureType === STRUCTURE_EXTENSION ||
-                    structure.structureType === STRUCTURE_TOWER) &&
-                    structure.energy < structure.energyCapacity)
+                    (structure.structureType === STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 100)) &&
+                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0)
         }
     });
 
@@ -245,10 +257,12 @@ Creep.prototype.Work = function(jobToPerform, context) {
         this.CollectEnergy()
     } else {
         // If a creep is in a room where no spawn is built yet
-        if (this.memory.role === 'upgrader' && this.room.controller.ticksToDowngrade < 3000) {
-            jobToPerform.apply(context)
-        } else if (this.room.find(FIND_MY_SPAWNS).length === 0) {
-            this.Construct()
+        if (this.room.find(FIND_MY_SPAWNS).length === 0) {
+            if (this.memory.role === 'upgrader' && this.room.controller.ticksToDowngrade < 3000) {
+                jobToPerform.apply(context)
+            } else {
+                this.Construct()
+            }
         }
         else {
             jobToPerform.apply(context)

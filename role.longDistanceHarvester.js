@@ -16,7 +16,7 @@ module.exports = {
                     filter: (s) => (s.structureType === STRUCTURE_SPAWN
                     || s.structureType === STRUCTURE_EXTENSION
                     || s.structureType === STRUCTURE_TOWER)
-                    && s.energy < s.energyCapacity
+                    && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                 });
 
                 if (structure != null) {
