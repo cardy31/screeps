@@ -23,7 +23,7 @@ let getNormalDamagedStructures = function(roomName) {
 let getDamagedFortifications = function(roomName) {
     return Game.rooms[roomName].find(FIND_STRUCTURES,
         {
-            filter: (s) => s.hits < s.hitsMax &&
+            filter: (s) => s.hits < conf.WALL_STRENGTH &&
                 s.structureType === STRUCTURE_WALL ||
                 s.structureType === STRUCTURE_RAMPART
         })
@@ -40,10 +40,18 @@ let towerHeal = function(room_name, towers, injuredCreeps) {
 let towerRepair = function(room_name, towers, normalRepairsNeeded, fortificationRepairsNeeded) {
     towers.forEach(tower => {
         if (tower.energy > tower.energyCapacity / 2) {
-            if (normalRepairsNeeded) {
+            if (normalRepairsNeeded.length > 0) {
                 tower.repair(normalRepairsNeeded[0])
-            } else if (fortificationRepairsNeeded) {
-                tower.repair(fortificationRepairsNeeded[0]);
+            } else if (fortificationRepairsNeeded.length > 0) {
+                let min = 100000000000
+                let fortificationToRepair = null
+                for (let i = 0; i < fortificationRepairsNeeded.length; i++) {
+                    if (fortificationRepairsNeeded[i].hits < min) {
+                        min = fortificationRepairsNeeded[i].hits
+                        fortificationToRepair = fortificationRepairsNeeded[i]
+                    }
+                }
+                tower.repair(fortificationToRepair);
             }
         }
     });
