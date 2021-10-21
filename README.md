@@ -1,2 +1,2 @@
 # Screeps
-My code for the game [Screeps](https://screeps.com/).
+My code for the game [Screeps](https://screeps.com/)!
